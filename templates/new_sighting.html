@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<form action="/new_sighting" method="POST">
+    <p>
+        Bird name: <input type="text" name="bird_name">
+    </p>
+    <p>
+        Time and date: <input type="datetime-local" name="time">
+    </p>
+    <p>
+        Location: <input type="text" name="location">
+    </p>
+    <p>
+        Additional information: <br>
+        <textarea name="additional_info" rows="3" cols="40"></textarea>
+    </p>
+    <input type="submit" value="Send">
+</form>
+<p>
+    <span style="color: red">{{ message }}</span>
+</p>
+<a href="/sightings">Cancel</a>
+
+
+{% endblock %}

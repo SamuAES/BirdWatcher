@@ -1,0 +1,58 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<h1>Bird sightings:</h1>
+<hr>
+
+{% for sighting in sightings %}
+    <p>
+        <i>User:</i> {{ sighting[0] }}
+    </p>
+    <p>
+        <i>Bird:</i> {{ sighting[1] }}
+    </p>
+    <p>
+        <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M:%S") }}
+    </p>
+    <p>
+        <i>Location:</i> {{sighting[3]}}
+    </p>
+
+    <button onclick="show_comments({{sighting[4]}})">Comments</button>
+
+    <div id="comments{{sighting[4]}}" style="display: none;">
+        <p>
+            Additional info: {{sighting[5]}}
+        </p>
+        <p>
+            {% for comment in comments %}
+
+                {% if comment[0] == sighting[4] %}
+                    <ul>
+                    <li><i>user:</i> {{comment[1]}}
+                    
+                    <li><i>comment:</i> {{comment[2]}}
+                    
+                    <li><i>Sent at:</i> {{ comment[3].strftime("%Y-%m-%d %H:%M:%S") }}
+                    </ul>
+                {% endif %}
+
+            {% endfor %}
+
+            <form action="/sightings" method="post">
+                <input type="hidden" name="sighting_id" value="{{sighting[4]}}">
+                <p>
+                <textarea name="new_comment" rows="3" cols="40"></textarea>
+                </p>
+                <input type="submit" value="Add comment">
+            </form>
+            
+        </p>
+        
+    </div>
+
+    <hr>
+
+{% endfor %}
+
+{% endblock %}

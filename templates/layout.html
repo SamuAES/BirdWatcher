@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+
+
+<title>BirdWatcher</title>
+<link rel="stylesheet" href="/static/style.css">
+<script src="/static/script.js"></script>
+
+
+        <h1>BirdWatcher</h1>
+        {% if session.user_id %}
+        <div class="topnav" id="topnavDIV">
+            <a class="active" href="/">Home</a>
+            <a class="" href="/sightings">Sightings</a>
+            <a class="" href="/new_sighting">New sighting</a>
+            <a class="" href="/profile">Own page</a>
+            <a class="" href="/logout">Log out</a>
+        </div>
+        {% else %}
+        <div class="topnav">
+            <a class="active" href="/">Home</a>
+            <a class="" href="/sightings">Sightings</a>
+            <a class="" href="/register">Sign up!</a>
+            <a class="" href="/login">Log in</a>
+        </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+    </body>
+</html>

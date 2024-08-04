@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+{% extends "layout.html" %}
+{% block content %}
+
+<br>
+<div class="div1">
+    <img src="/static/images/frontpage_bird.jpg" width="400" height="550"/>
+    <br>
+    Ultimate fun! Watch birds and post your sightings! Sign up now for free. No adds (yet) or other hidden fees (maybe in the future)!
+</div>
+
+<h3>Recent sightings:</h3>
+<hr>
+{% for sighting in sightings[0:10] %}
+<p>
+<i>User:</i> {{ sighting[0] }}
+</p>
+<p>
+<i>Bird:</i> {{ sighting[1] }}
+</p>
+<p>
+<i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M:%S") }}
+</p>
+<p>
+<i>Location:</i> {{sighting[3]}}
+</p>
+<hr>
+{% endfor %}
+
+{% endblock %}
+
+
+
+        
+
+

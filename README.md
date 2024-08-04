@@ -14,3 +14,5 @@ BirdWatcher is a web application where you can:
 ● Reply to comments about your sightings and comment on other peoples bird sightings.
 
 ● Add people to your friend list so that you can easily follow what birds they have spotted.
+
+
