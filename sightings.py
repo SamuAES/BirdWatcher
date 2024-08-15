@@ -31,4 +31,14 @@ def add_comment(sighting_id, content):
     sql = "INSERT INTO comments (sighting_id, user_id, content, sent_at) VALUES (:sighting_id, :user_id, :content, NOW())"
     db.session.execute(text(sql), {"sighting_id":sighting_id, "user_id":user_id, "content":content})
     db.session.commit()
-    
+
+def valid_bird_name(bird_name:str) -> bool:
+    """
+    Check if bird name is selected for new sighting.
+    """
+    if bird_name == "":
+        return False
+    else:
+        return True
+
+

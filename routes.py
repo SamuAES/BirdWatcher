@@ -1,12 +1,16 @@
 from app import app
 from flask import render_template, request, redirect
 import users, sightings
+import csv
+
+with open('static/birdnames.csv', mode='r') as csvfile:
+    birdlist = [bird[0] for bird in csv.reader(csvfile)]
+
 
 @app.route("/", methods=["GET"])
 def index():
     bird_sightings = sightings.get_list()
     return render_template("index.html", sightings = bird_sightings)
-
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -20,6 +24,7 @@ def login():
             return redirect("/")
         else:
             return render_template("login.html", message= "No username with that name or wrong password." )
+
 
 @app.route("/sightings", methods=["GET", "POST"])
 def show_sightings():
@@ -37,16 +42,22 @@ def show_sightings():
 @app.route("/new_sighting", methods=["GET", "POST"])
 def new_sighting():
     if request.method == "GET":
-        return render_template("new_sighting.html")
+        return render_template("new_sighting.html", birdlist = birdlist )
     if request.method == "POST":
+
         bird_name = request.form["bird_name"]
+        if not sightings.valid_bird_name(bird_name):
+            return render_template("new_sighting.html", birdlist = birdlist, message="Must choose a bird.")
+        
         time = request.form["time"]
         location = request.form["location"]
         additional_info = request.form["additional_info"]
+
         if sightings.new_sighting(bird_name, time, location, additional_info):
             return redirect("/sightings")
         else:
-            return render_template("new_sighting.html", message="Failed to post new sighting")
+            return render_template("new_sighting.html", birdlist = birdlist, message="Failed to post new sighting" )
+
 
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
@@ -69,6 +80,7 @@ def profile():
 def logout():
     users.logout()
     return redirect("/")
+
 
 @app.route("/register", methods=["GET", "POST"])
 def register():

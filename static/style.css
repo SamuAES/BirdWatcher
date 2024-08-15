@@ -94,7 +94,7 @@ body{
 }
 .search input{
   height: 50px;
-  width: 100%;
+  width: 80%;
   outline: none;
   font-size: 17px;
   border-radius: 5px;
