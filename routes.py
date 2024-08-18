@@ -62,6 +62,9 @@ def new_sighting():
 @app.route("/profile/<string:username>", methods=["GET", "POST"])
 def profile(username):
     
+    if username == users.get_username():
+        return redirect("/own_page")
+
     bird_sightings = sightings.get_list(users.get_id_by_username(username))
 
     if request.method == "GET":
