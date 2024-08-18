@@ -1,10 +1,7 @@
-from app import app
-from flask import render_template, request, redirect
+from app import app, birdlist
+from flask import render_template, request, redirect, session
 import users, sightings, follows
-import csv
 
-with open('static/birdnames.csv', mode='r') as csvfile:
-    birdlist = [bird[0] for bird in csv.reader(csvfile)]
 
 
 @app.route("/", methods=["GET"])
@@ -129,3 +126,16 @@ def register():
             return redirect("/")
         else:
             return render_template("register.html", message="Username is already in use.")
+        
+@app.route("/management", methods=["GET", "POST"])
+def management():
+    try:
+        if session["admin"] or session["moderator"]:
+            if request.method == "GET":
+                return render_template("management.html")
+            
+    except:
+        return redirect("/")
+
+    
+    

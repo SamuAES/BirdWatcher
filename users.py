@@ -2,9 +2,10 @@ from db import db
 from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.sql import text
+from os import getenv
 
 def login(username, password):
-    sql = "SELECT id, password FROM Users WHERE username=:username"
+    sql = "SELECT id, password, moderator FROM Users WHERE username=:username"
     result = db.session.execute(text(sql), {"username":username})
     user = result.fetchone()
     if not user:
@@ -13,12 +14,27 @@ def login(username, password):
         if check_password_hash(user.password, password):
             session["user_id"] = user.id
             session["username"] = username
+            if user.moderator == "true":
+                session["moderator"] = True
+
+            if username == getenv("admin"):
+                session["admin"] = True
+
             return True
         else:
             return False
 
 def logout():
     del session["user_id"]
+    del session["username"]
+    try:
+        del session["moderator"]
+    except:
+        pass
+    try:
+        del session["admin"]
+    except:
+        pass
 
 def register(username, password):
     hash_value = generate_password_hash(password)
@@ -51,3 +67,10 @@ def is_user():
     except:
         return False
 
+def make_moderator(id):
+    try:
+        sql = "UPDATE Users SET moderator = true WHERE id = :id"
+        db.session.execute(text(sql), {"id": id})
+        db.session.commit()
+    except:
+        return "Something went wrong..."
