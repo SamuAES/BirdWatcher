@@ -3,25 +3,43 @@
 
 {% if session.user_id %}
 
+    {% if follower %}
+        <form action="/profile/{{username}}" method="POST">
+            <p>
+                <input type="hidden" name="follow_btn" value="unfollow">
+                <input type="submit" value="Unfollow {{username}}">
+            </p>
+        </form>
+    {% else %}
+        <form action="/profile/{{username}}" method="POST">
+            <p>
+                <input type="hidden" name="follow_btn" value="follow">
+                <input type="submit" value="Follow {{username}}">
+            </p>
+        </form>
+    {% endif %}
+
 <h2>{{username}} bird sightings:</h2>
 <hr>
 {% for sighting in sightings %}
-<p>
-<i>Bird:</i> {{ sighting[0] }}
-</p>
-<p>
-<i>Time:</i> {{ sighting[1].strftime("%Y-%m-%d %H:%M:%S") }}
-</p>
-<p>
-<i>Location:</i> {{sighting[2]}}
-</p>
-
-
-<hr>
+    <p>
+        <i>Bird:</i> {{ sighting[0] }}
+    </p>
+    <p>
+        <i>Time:</i> {{ sighting[1].strftime("%Y-%m-%d %H:%M:%S") }}
+    </p>
+    <p>
+        <i>Location:</i> {{sighting[2]}}
+    </p>
+    <hr>
 {% endfor %}
+
+{% else %}
+
+<p>Log in to view other people sightings!</p>
 
 {% endif %}
 
-<p>Log in to view other people sightings!</p>
+
 
 {% endblock %}

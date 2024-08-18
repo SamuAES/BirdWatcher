@@ -21,7 +21,7 @@ def login():
         username = request.form["username"]
         password = request.form["password"]
         if users.login(username, password):
-            return redirect("/")
+            return redirect("/own_page")
         else:
             return render_template("login.html", message= "No username with that name or wrong password." )
 
@@ -66,10 +66,25 @@ def profile(username):
         return redirect("/own_page")
 
     bird_sightings = sightings.get_list(users.get_id_by_username(username))
+    follower = follows.is_following(username)
 
     if request.method == "GET":
-        return render_template("profile.html", sightings = bird_sightings, username = username)
+        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower)
     
+    if request.method == "POST":
+        
+        button_result = request.form["follow_btn"]
+        
+        if button_result == "unfollow":
+            result = follows.stop_follow(username)
+            if result:
+                return redirect("/profile/"+username)
+            return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
+        
+        result = follows.add_follow(username)
+        if result:
+            return redirect("/profile/"+username)
+        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
 
 @app.route("/own_page", methods=["GET", "POST"])
 def own_page():

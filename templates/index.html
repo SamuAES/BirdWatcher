@@ -13,19 +13,19 @@
 <h3>Recent sightings:</h3>
 <hr>
 {% for sighting in sightings[0:10] %}
-<p>
-<i>User:</i> {{ sighting[0] }}
-</p>
-<p>
-<i>Bird:</i> {{ sighting[1] }}
-</p>
-<p>
-<i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M:%S") }}
-</p>
-<p>
-<i>Location:</i> {{sighting[3]}}
-</p>
-<hr>
+    <p>
+        <i>User:</i> <a href="/profile/{{sighting[0]}}"> {{ sighting[0] }} </a>
+    </p>
+    <p>
+        <i>Bird:</i> {{ sighting[1] }}
+    </p>
+    <p>
+        <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M:%S") }}
+    </p>
+    <p>
+        <i>Location:</i> {{sighting[3]}}
+    </p>
+    <hr>
 {% endfor %}
 
 {% endblock %}
