@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block content %}
+
+{% if session.user_id %}
+
+<h2>Your own bird sightings:</h2>
+<hr>
+{% for sighting in sightings %}
+<p>
+<i>Bird:</i> {{ sighting[0] }}
+</p>
+<p>
+<i>Time:</i> {{ sighting[1].strftime("%Y-%m-%d %H:%M:%S") }}
+</p>
+<p>
+<i>Location:</i> {{sighting[2]}}
+</p>
+
+
+<hr>
+{% endfor %}
+
+<h2>You are following:</h2>
+<ul>
+    {% for username in follows %}
+        <li>
+            <a href="/profile/{{username[0]}}">{{username[0]}}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+Start following:
+<form action="/own_page" method="post">
+    <input type="text" name="follow_username">
+    <input type="submit" value="Follow">
+</form>
+
+<p>
+    <span style="color: red">{{ message }}</span> 
+</p>
+
+<h2>People who are following you:</h2>
+<ul>
+    {% for username in followers %}
+        <li>
+            <a href="/profile/{{username[0]}}">{{username[0]}}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+{% endif %}
+
+{% endblock %}

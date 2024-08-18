@@ -6,7 +6,7 @@
 
 {% for sighting in sightings %}
     <p>
-        <i>User:</i> {{ sighting[0] }}
+        <i>User:</i> <a href="/profile/{{sighting[0]}}">{{ sighting[0] }}</a>
     </p>
     <p>
         <i>Bird:</i> {{ sighting[1] }}
@@ -29,7 +29,7 @@
 
                 {% if comment[0] == sighting[4] %}
                     <ul>
-                    <li><i>user:</i> {{comment[1]}}
+                    <li><i>user:</i> <a href="/profile/{{comment[1]}}"> {{comment[1]}} </a>
                     
                     <li><i>comment:</i> {{comment[2]}}
                     

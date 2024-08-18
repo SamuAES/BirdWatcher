@@ -1,6 +1,6 @@
 from app import app
 from flask import render_template, request, redirect
-import users, sightings
+import users, sightings, follows
 import csv
 
 with open('static/birdnames.csv', mode='r') as csvfile:
@@ -59,23 +59,34 @@ def new_sighting():
             return render_template("new_sighting.html", birdlist = birdlist, message="Failed to post new sighting" )
 
 
-@app.route("/profile", methods=["GET", "POST"])
-def profile():
-    bird_sightings = sightings.get_list(users.user_id())
-    friendlist = users.get_friendlist()
+@app.route("/profile/<string:username>", methods=["GET", "POST"])
+def profile(username):
+    
+    bird_sightings = sightings.get_list(users.get_id_by_username(username))
 
     if request.method == "GET":
-        return render_template("profile.html", sightings = bird_sightings, friends = friendlist)
+        return render_template("profile.html", sightings = bird_sightings, username = username)
+    
+
+@app.route("/own_page", methods=["GET", "POST"])
+def own_page():
+    
+    bird_sightings = sightings.get_list(users.user_id())
+    followlist = follows.get_followlist()
+    followerlist = follows.get_followerlist()
+
+    if request.method == "GET":
+        return render_template("own_page.html", sightings = bird_sightings, follows = followlist, followers = followerlist)
     
     if request.method == "POST":
-        friend_username = request.form["friend_username"]
-        result = users.add_friend(friend_username)
+        follow_username = request.form["follow_username"]
+        result = follows.add_follow(follow_username)
         if result is True:
-            return redirect("/profile")
+            return redirect("/own_page")
         else:
-            return render_template("profile.html", sightings = bird_sightings, friends = friendlist, message = result)
+            return render_template("own_page.html", sightings = bird_sightings, follows = followlist, followers = followerlist, message = result)
 
-    
+
 @app.route("/logout")
 def logout():
     users.logout()

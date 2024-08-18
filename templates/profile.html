@@ -3,7 +3,7 @@
 
 {% if session.user_id %}
 
-<h2>Your own bird sightings:</h2>
+<h2>{{username}} bird sightings:</h2>
 <hr>
 {% for sighting in sightings %}
 <p>
@@ -20,23 +20,8 @@
 <hr>
 {% endfor %}
 
-<h2>Your friends:</h2>
-<ul>
-    {% for friend in friends %}
-        <li>{{ friend[0] }}
-    {% endfor %}
-</ul>
-
-Add friend:
-<form action="/profile" method="post">
-    <input type="text" name="friend_username">
-    <input type="submit" value="Add friend">
-</form>
-
-<p>
-    <span style="color: red">{{ message }}</span> 
-</p>
-
 {% endif %}
+
+<p>Log in to view other people sightings!</p>
 
 {% endblock %}
