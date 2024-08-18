@@ -1,5 +1,5 @@
 # BirdWatcher
-Share and comment on your bird sightings with friends and other bird watchers!
+Share and comment on your bird sightings with other bird watchers!
 
 BirdWatcher is a web application where you can:
 
@@ -13,7 +13,7 @@ BirdWatcher is a web application where you can:
 
 ● Reply to comments about your sightings and comment on other peoples bird sightings.
 
-● Add people to your friend list so that you can easily follow what birds they have spotted.
+● Follow users so you can see easily what birds they have spotted recently!
 
 # Current stage of development
 
@@ -23,5 +23,31 @@ BirdWatcher is a web application where you can:
 
 ● You can add comments to other users sightings and you can add other people to your friend list.
 
-You can test te program by creating database according to schema.sql. Create .env file and store there your DATABASE_URL and secret_key. Then run the flask app.
+● You can follow other users and you can see who is following you.
+
+# Still in progress
+
+● Add functionalities to management page so admin and moderators can ban/unban users and delete comments or sightings.
+
+● Add database for birds so users can get additional information about birds if they click on bird name.
+
+● Add funtionality that users can search for bird sightings by username or birdname.
+
+● Customize the layout and interface of the pages.
+
+# How to test the program
+
+● Create a database according to schema.sql
+
+● Create .env file and store there:
+
+    DATABASE_URL = postgresql://username:password@host:port/dtabase_name
+    SECRET_KEY = 'your secret key'
+    admin = 'username'  #This username will have admin rights.
+
+● Install python dependencies from requirements.txt
+
+● Run flask 
+
+
 

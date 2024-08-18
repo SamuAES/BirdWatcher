@@ -28,8 +28,6 @@ CREATE TABLE FollowList (
 );
 CREATE TABLE Blacklist (
     id INTEGER REFERENCES Users,
-    permanent BOOLEAN,
-    ban_length TIMESTAMP,
     reason TEXT,
     unbanned BOOLEAN DEFAULT false
 );
