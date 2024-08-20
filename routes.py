@@ -1,12 +1,12 @@
 from app import app, birdlist
 from flask import render_template, request, redirect, session
-import users, sightings, follows
+import users, sightings, followers
 
 
 
 @app.route("/", methods=["GET"])
 def index():
-    bird_sightings = sightings.get_list()
+    bird_sightings = sightings.get_sightings()
     return render_template("index.html", sightings = bird_sightings)
 
 
@@ -26,15 +26,36 @@ def login():
 @app.route("/sightings", methods=["GET", "POST"])
 def show_sightings():
     if request.method == "GET":
-        bird_sightings = sightings.get_list()
+        bird_sightings = sightings.get_sightings()
         comments = sightings.get_comments()
         return render_template("sightings.html", sightings = bird_sightings, comments = comments)
+    
     if request.method == "POST":
-        sighting_id = request.form["sighting_id"]
-        comment = request.form["new_comment"]
-        sightings.add_comment(sighting_id, comment)
-        return redirect("/sightings")
-
+        
+        #add new comment
+        try:    
+            sighting_id = request.form["sighting_id"]
+            comment = request.form["new_comment"]
+            sightings.add_comment(sighting_id, comment)
+        except:
+            pass
+        
+        #delete comment
+        try:
+            comment_id = request.form["comment_id"]
+            sightings.delete_comment(comment_id)
+        except:
+            pass
+        
+        #delete sighting
+        try:
+            sighting_id = request.form["sighting_id"]
+            sightings.delete_sighting(sighting_id)
+        except:
+            pass
+        
+        finally:
+            return redirect("/sightings")
 
 @app.route("/new_sighting", methods=["GET", "POST"])
 def new_sighting():
@@ -62,8 +83,8 @@ def profile(username):
     if username == users.get_username():
         return redirect("/own_page")
 
-    bird_sightings = sightings.get_list(users.get_id_by_username(username))
-    follower = follows.is_following(username)
+    bird_sightings = sightings.get_sightings(users.get_id_by_username(username))
+    follower = followers.is_following(username)
 
     if request.method == "GET":
         return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower)
@@ -73,12 +94,12 @@ def profile(username):
         button_result = request.form["follow_btn"]
         
         if button_result == "unfollow":
-            result = follows.stop_follow(username)
+            result = followers.stop_follow(username)
             if result:
                 return redirect("/profile/"+username)
             return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
         
-        result = follows.add_follow(username)
+        result = followers.add_follow(username)
         if result:
             return redirect("/profile/"+username)
         return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
@@ -86,20 +107,20 @@ def profile(username):
 @app.route("/own_page", methods=["GET", "POST"])
 def own_page():
     
-    bird_sightings = sightings.get_list(users.user_id())
-    followlist = follows.get_followlist()
-    followerlist = follows.get_followerlist()
+    bird_sightings = sightings.get_sightings(users.user_id())
+    followslist = followers.get_followslist()
+    followerlist = followers.get_followerlist()
 
     if request.method == "GET":
-        return render_template("own_page.html", sightings = bird_sightings, follows = followlist, followers = followerlist)
+        return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist)
     
     if request.method == "POST":
         follow_username = request.form["follow_username"]
-        result = follows.add_follow(follow_username)
+        result = followers.add_follow(follow_username)
         if result is True:
             return redirect("/own_page")
         else:
-            return render_template("own_page.html", sightings = bird_sightings, follows = followlist, followers = followerlist, message = result)
+            return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, message = result)
 
 
 @app.route("/logout")

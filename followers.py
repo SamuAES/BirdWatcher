@@ -16,7 +16,7 @@ def add_follow(username):
         
     try:
         match_id = int(f"{user}{follow_id}")
-        sql = "INSERT INTO FollowList (match_id, user_id, follow_id) VALUES (:match_id, :user_id, :follow_id)"
+        sql = "INSERT INTO Followers (match_id, user_id, follow_id) VALUES (:match_id, :user_id, :follow_id)"
         db.session.execute(text(sql), {"match_id":match_id, "user_id":user, "follow_id":follow_id})
         db.session.commit()
         return True
@@ -26,7 +26,7 @@ def add_follow(username):
 def stop_follow(username):
     user = user_id()
     follow_id = get_id_by_username(username)
-    sql = "DELETE FROM FollowList WHERE user_id = :user_id AND follow_id = :follow_id"
+    sql = "DELETE FROM Followers WHERE user_id = :user_id AND follow_id = :follow_id"
     try:
         db.session.execute(text(sql), {"user_id":user, "follow_id":follow_id})
         db.session.commit()
@@ -36,22 +36,22 @@ def stop_follow(username):
     
     
 
-def get_followlist():
+def get_followslist():
     user = user_id()
-    sql = "SELECT U.username FROM Users U, FollowList F WHERE F.user_id = :user_id AND F.follow_id = U.id"
+    sql = "SELECT U.username FROM Users U, Followers F WHERE F.user_id = :user_id AND F.follow_id = U.id"
     result = db.session.execute(text(sql), {"user_id": user})
     return result.fetchall()
 
 def get_followerlist():
     user = user_id()
-    sql = "SELECT U.username FROM Users U, FollowList F WHERE F.follow_id = :user_id AND F.user_id = U.id"
+    sql = "SELECT U.username FROM Users U, Followers F WHERE F.follow_id = :user_id AND F.user_id = U.id"
     result = db.session.execute(text(sql), {"user_id": user})
     return result.fetchall()
 
 def is_following(username):
     user = user_id()
     follow_id = get_id_by_username(username)
-    sql = "SELECT * FROM FollowList WHERE user_id = :user_id AND follow_id = :target_id"
+    sql = "SELECT * FROM Followers WHERE user_id = :user_id AND follow_id = :target_id"
     result = db.session.execute(text(sql), {"user_id":user, "target_id":follow_id}).fetchone()
     
     if result is None:

@@ -1,10 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
 
+{% if session.user_id %}
+
 <h1>Bird sightings:</h1>
 <hr>
-
+<!-- List all sightings. -->
 {% for sighting in sightings %}
+
+    <!-- Show comment id for admin and moderators if they need to reference to it. -->
+    {% if session.moderator or session.admin %}
+        <p>
+            <i>Comment id:</i> {{ sighting[4] }}
+        </p>
+    {% endif %}
+
+    <!-- Sighting info. -->
     <p>
         <i>User:</i> <a href="/profile/{{sighting[0]}}">{{ sighting[0] }}</a>
     </p>
@@ -18,8 +29,19 @@
         <i>Location:</i> {{sighting[3]}}
     </p>
 
+    <!-- Admin, moderator or user who posted the sighting can delete it. -->
+    {% if session.username == sighting[0] or session.moderator or session.admin %}
+    <form action="/sightings" method="post">
+        <input type="hidden" name="sighting_id" value="{{sighting[4]}}">
+        <p>
+            <input type="submit" value="Delete sighting">
+        </p>
+    </form>
+    {% endif %}
+
     <button onclick="show_comments({{sighting[4]}})">Comments</button>
 
+    <!-- List all comments about the sighting. -->
     <div id="comments{{sighting[4]}}" style="display: none;">
         <p>
             Additional info: {{sighting[5]}}
@@ -35,6 +57,14 @@
                     
                     <li><i>Sent at:</i> {{ comment[3].strftime("%Y-%m-%d %H:%M:%S") }}
                     </ul>
+
+                    <!-- Admin, moderator or user who posted the comment can delete it. -->
+                    {% if session.username == comment[1] or session.moderator or session.admin %}
+                        <form action="/sightings" method="post">
+                            <input type="hidden" name="comment_id" value="{{comment[4]}}">
+                            <input type="submit" value="Delete comment">
+                        </form>
+                    {% endif %}
                 {% endif %}
 
             {% endfor %}
@@ -54,5 +84,9 @@
     <hr>
 
 {% endfor %}
+
+{% endif %}
+
+Log in to see more sightings!
 
 {% endblock %}

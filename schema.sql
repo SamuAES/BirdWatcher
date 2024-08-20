@@ -21,13 +21,13 @@ CREATE TABLE Comments (
     sent_at TIMESTAMP,
     visibility BOOLEAN
 );
-CREATE TABLE FollowList (
+CREATE TABLE Followers (
     match_id INTEGER UNIQUE,
     user_id INTEGER REFERENCES Users,
     follow_id INTEGER REFERENCES Users
 );
 CREATE TABLE Blacklist (
-    id INTEGER REFERENCES Users,
+    user_id INTEGER REFERENCES Users,
     reason TEXT,
-    unbanned BOOLEAN DEFAULT false
+    date TIMESTAMP
 );

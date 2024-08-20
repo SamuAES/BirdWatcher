@@ -3,9 +3,9 @@ from app import birdlist
 import users
 from sqlalchemy.sql import text
 
-def get_list(user_id = None):
+def get_sightings(user_id = None):
     if user_id is None:
-        sql = "SELECT U.username, S.bird_name, S.time, S.location, S.id, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id ORDER BY S.time DESC"
+        sql = "SELECT U.username, S.bird_name, S.time, S.location, S.id, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id AND S.visibility = true ORDER BY S.time DESC"
         result = db.session.execute(text(sql))
     else:
         sql = "SELECT bird_name, time, location FROM Sightings WHERE user_id = :user_id ORDER BY time DESC"
@@ -23,7 +23,7 @@ def new_sighting(bird_name, time, location, additional_info):
     return True
 
 def get_comments():
-    sql = "SELECT C.sighting_id, U.username, C.content, C.sent_at FROM Comments C, Users U WHERE C.user_id = U.id"
+    sql = "SELECT C.sighting_id, U.username, C.content, C.sent_at, C.id FROM Comments C, Users U WHERE C.user_id = U.id AND visibility = true"
     result = db.session.execute(text(sql))
     return result.fetchall()
 
@@ -41,5 +41,15 @@ def valid_bird_name(bird_name:str) -> bool:
         return False
     else:
         return True
+
+def delete_comment(comment_id):
+    sql = "UPDATE Comments SET visibility = false WHERE id = :id"
+    db.session.execute(text(sql), {"id": comment_id})
+    db.session.commit()
+
+def delete_sighting(sighting_id):
+    sql = "UPDATE Sightings SET visibility = false WHERE id = :id"
+    db.session.execute(text(sql), {"id": sighting_id})
+    db.session.commit()
 
 
