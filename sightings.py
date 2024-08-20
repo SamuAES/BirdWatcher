@@ -8,7 +8,7 @@ def get_sightings(user_id = None):
         sql = "SELECT U.username, S.bird_name, S.time, S.location, S.id, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id AND S.visibility = true ORDER BY S.time DESC"
         result = db.session.execute(text(sql))
     else:
-        sql = "SELECT bird_name, time, location FROM Sightings WHERE user_id = :user_id ORDER BY time DESC"
+        sql = "SELECT U.username, S.bird_name, S.time, S.location, S.id, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id AND U.id = :user_id AND S.visibility = true ORDER BY S.time DESC"
         result = db.session.execute(text(sql), {"user_id":user_id})
     
     return result.fetchall()

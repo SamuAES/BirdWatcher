@@ -68,7 +68,8 @@
                 {% endif %}
 
             {% endfor %}
-
+            
+            <!-- Make new comment. -->
             <form action="/sightings" method="post">
                 <input type="hidden" name="sighting_id" value="{{sighting[4]}}">
                 <p>
@@ -85,8 +86,13 @@
 
 {% endfor %}
 
-{% endif %}
+{% else %}
 
 Log in to see more sightings!
+
+{% endif %}
+
+
+
 
 {% endblock %}
