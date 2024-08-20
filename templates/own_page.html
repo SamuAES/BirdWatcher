@@ -50,7 +50,7 @@
                     </ul>
 
                     <!-- User can delete own comment. -->
-                    {% if session.username == comment[1] %}
+                    {% if session.username == comment[1] or session.moderator or session.admin %}
                         <form action="/own_page" method="post">
                             <input type="hidden" name="comment_id" value="{{comment[4]}}">
                             <input type="submit" value="Delete comment">

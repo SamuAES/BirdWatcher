@@ -14,13 +14,14 @@ def login(username, password):
         if check_password_hash(user.password, password):
             session["user_id"] = user.id
             session["username"] = username
-            if user.moderator == "true":
+            if user.moderator is True:
                 session["moderator"] = True
 
             if username == getenv("admin"):
                 session["admin"] = True
 
             return True
+        
         else:
             return False
 
@@ -67,10 +68,34 @@ def is_user():
     except:
         return False
 
-def make_moderator(id):
+def get_moderators():
+    sql = "SELECT id, username FROM Users WHERE moderator = true"
+    result = db.session.execute(text(sql))
+    return result.fetchall()
+
+def promote_moderator(username):
+    sql = "SELECT id, moderator FROM Users WHERE username = :username"
+    result = db.session.execute(text(sql), {"username":username})
+    user = result.fetchone()
+
+    if user is None:
+        return "No user with that name."
+    if user[1] == True:
+        return "That user is already a moderator."
+
     try:
-        sql = "UPDATE Users SET moderator = true WHERE id = :id"
-        db.session.execute(text(sql), {"id": id})
+        sql = "UPDATE Users SET moderator = true WHERE id = :user_id"
+        db.session.execute(text(sql), {"user_id": user[0]})
         db.session.commit()
+        return True
+    except:
+        return "Something went wrong..."
+
+def demote_moderator(user_id):
+    try:
+        sql = "UPDATE Users SET moderator = false WHERE id = :user_id"
+        db.session.execute(text(sql), {"user_id": user_id})
+        db.session.commit()
+        return True
     except:
         return "Something went wrong..."

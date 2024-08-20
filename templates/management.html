@@ -10,6 +10,32 @@
     <li>Admin and moderators can delete comments or sightings.</li>
 </ul>
 
+    {% if session.admin %}
+        Make user moderator:
+        <form action="/management" method="post">
+            <input type="text" name="promote_username">
+            <input type="submit" value="Promote">
+        </form>
 
-{{message}}
+        <ul>
+            Moderators:
+            {% for moderator in moderators %}
+            <li>
+                <p>
+                    {{moderator[1]}}&emsp;  
+                    <form action="/management" method="post">
+                        <input type="hidden" name="demote_username" value="{{moderator[0]}}">
+                        <input type="submit" value="Demote">
+                    </form>
+                </p>
+            </li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+
+<p>
+    <span style="color: red">{{ message }}</span> 
+</p>
+
 {% endblock %}

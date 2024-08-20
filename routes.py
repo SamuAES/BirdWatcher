@@ -46,16 +46,53 @@ def register():
             return redirect("/")
         else:
             return render_template("register.html", message="Username is already in use.")
-        
+
+
 @app.route("/management", methods=["GET", "POST"])
 def management():
+    # Let only admin or moderators see /managament page.
     try:
-        if session["admin"] or session["moderator"]:
-            if request.method == "GET":
-                return render_template("management.html")
-            
+        session["moderator"]
     except:
-        return redirect("/")
+        try:
+            session["admin"]
+        except:
+            return redirect("/")
+
+    moderators = users.get_moderators()
+
+    if request.method == "GET":    
+
+        return render_template("management.html", moderators = moderators)
+    
+    if request.method == "POST":
+
+        # Promote username to moderator
+        try:
+            username = request.form["promote_username"]
+            result = users.promote_moderator(username)
+
+            if result is True:
+                return redirect("/management")
+            else:
+                return render_template("management.html", moderators = moderators, message = result)
+            
+        except:
+            pass
+
+        # Demote moderator
+        try:
+            user_id = request.form["demote_username"]
+            result = users.demote_moderator(user_id)
+            if result is True:
+                return redirect("/management")
+            else:
+                return render_template("management.html", moderators = moderators, message = result)
+        except:
+            pass
+ 
+    
+        
 
 
 @app.route("/sightings", methods=["GET", "POST"])
@@ -194,6 +231,7 @@ def own_page():
             return redirect("/own_page")
         except:
             pass
+
 
 
 

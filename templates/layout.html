@@ -14,7 +14,7 @@
             <a class="" href="/new_sighting">New sighting</a>
             <a class="" href="/own_page">Own page</a>
             <a class="" href="/logout">Log out</a>
-            {% if session.admin %}
+            {% if session.admin or session.moderator %}
                 <a class="" href="/management">Management</a>
             {% endif %}
         </div>
