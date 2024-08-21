@@ -13,9 +13,11 @@ def index():
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+
     if request.method == "GET":
         return render_template("login.html")
-    if request.method == "POST":
+    
+    elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
         if users.login(username, password):
@@ -33,18 +35,22 @@ def logout():
 def register():
     if request.method == "GET":
         return render_template("register.html")
-    if request.method == "POST":
+    elif request.method == "POST":
         username = request.form["username"]
         password1 = request.form["password1"]
         password2 = request.form["password2"]
+        
+        name = request.form["name"]
+        age = request.form["age"]
+        bio = request.form["bio"]
+
         if password1 != password2:
             return render_template("register.html", message="Passwords are not the same.")
-        elif len(username) == 0:
-            return render_template("register.html", message="Username must be between 1 to 20 characters long.")
-        elif len(password1) == 0:
-            return render_template("register.html", message="Password must be between 1 to 20 characters long.")
+        
         elif users.register(username, password1):
+            users.add_bio(name, age, bio)
             return redirect("/")
+        
         else:
             return render_template("register.html", message="Username is already in use.")
 
@@ -113,7 +119,7 @@ def sighting_id(id):
             image = base64.b64encode(data).decode("utf-8")
             return render_template("sighting_details.html", id = id, sighting = bird_sighting, comments = sighting_comments, image = image)
     
-    if request.method == "POST":
+    elif request.method == "POST":
         # add new comment
         try:    
             sighting_id = request.form["sighting_id"]
@@ -173,9 +179,10 @@ def profile(username):
 
     bird_sightings = sightings.get_all_sightings(users.get_id_by_username(username))
     follower = followers.is_following(username)
+    bio = users.get_bio(users.get_id_by_username(username))
 
     if request.method == "GET":
-        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower)
+        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, bio = bio)
     
     if request.method == "POST":
 
@@ -189,14 +196,14 @@ def profile(username):
             if result:
                 return redirect("/profile/"+username)
             
-            return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
+            return render_template("profile.html", sightings = bird_sightings, username = username, bio = bio, follower = follower, message="Something went wrong. Please contact support.")
         
         # If user wants to follow
         result = followers.add_follow(username)
 
         if result:
             return redirect("/profile/"+username)
-        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
+        return render_template("profile.html", sightings = bird_sightings, username = username, bio = bio, follower = follower, message="Something went wrong. Please contact support.")
 
 
 
@@ -208,12 +215,13 @@ def own_page():
     bird_sightings = sightings.get_all_sightings(users.user_id())
     followslist = followers.get_followslist()
     followerlist = followers.get_followerlist()
+    bio = users.get_bio(users.user_id())
 
     if request.method == "GET":
-        return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist)
+        return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, bio = bio)
     
-    if request.method == "POST":
-        
+    elif request.method == "POST":
+
         # Follow new user
         try:
             follow_username = request.form["follow_username"]
@@ -222,10 +230,19 @@ def own_page():
             if result is True:
                 return redirect("/own_page")
             else:
-                return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, message = result)
+                return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, bio = bio, message = result)
         except:
             pass
         
+        # Edit bio
+        try:
+            name = request.form["name"]
+            age = request.form["age"]
+            bio = request.form["bio"]
+            if users.edit_bio(name, age, bio):
+                return redirect("/own_page")
+        except:
+            return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, bio = bio, message = "Wasn't able to update profile. Please contact support.")
 
 
 

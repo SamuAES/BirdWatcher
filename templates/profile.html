@@ -3,6 +3,29 @@
 
 {% if session.user_id %}
 
+<h2>{{username}}</h2>
+<!-- Profile bio -->
+<div id="bio_div" style="display: block;">
+    <ul>
+        {% if bio.name %}
+            <li>Name:{{bio.name}}</li>
+        {% endif %}
+        {% if bio.name %}
+            <li>Age:{{bio.age}}</li>
+        {% endif %}
+        {% if bio.name %}
+            <li>Bio:</li>  
+            <li>
+                <div class="biobox">
+                    {{bio.bio}}
+                </div>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
+
+
     {% if follower %}
         <form action="/profile/{{username}}" method="POST">
             <p>

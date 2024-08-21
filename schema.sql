@@ -4,6 +4,12 @@ CREATE TABLE Users (
     password TEXT,
     moderator BOOLEAN
 );
+CREATE TABLE Bios (
+    user_id INTEGER PRIMARY KEY REFERENCES Users,
+    name TEXT,
+    age TEXT,
+    bio TEXT
+);
 CREATE TABLE Sightings (
     id SERIAL PRIMARY KEY,
     user_id INTEGER REFERENCES Users,
@@ -37,4 +43,4 @@ CREATE TABLE Images (
     name TEXT,
     data BYTEA,
     visibility BOOLEAN
-)
+);

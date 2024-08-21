@@ -5,6 +5,12 @@
   padding: 10px;
 }
 
+.biobox {
+  width: 300px;
+  border: 3px solid #04AA6D;
+  padding: 10px;
+}
+
 
 /* Add a black background color to the top navigation */
 .topnav {

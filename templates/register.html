@@ -2,14 +2,29 @@
 {% block content %}
 
 <form action="/register" method="post">
-<p>
-Username: <input type="text" name="username" minlength="1" maxlength="20" required>
-</p>
-Password: <input type="password" name="password1" minlength="1" maxlength="20" required>
-<p>
-Password: <input type="password" name="password2" minlength="1" maxlength="20" required>
-</p>
-<input type="submit" value="Register">
+    <h2>Register new user!</h2>
+    <p>
+        Username: <input type="text" name="username" minlength="1" maxlength="20" required>
+    </p>
+        Password: <input type="password" name="password1" minlength="1" maxlength="20" required>
+    <p>
+        Password: <input type="password" name="password2" minlength="1" maxlength="20" required>
+    </p>
+    <p>
+        Optional:
+    </p>
+    <p>
+        Name: <input type="text" name="name" minlength="2" maxlength="40">
+    </p>
+    <p>
+        Age: <input type="number" name="age" min="1" max="120">
+    </p>
+    <p>
+        Bio:<br>
+        <textarea name="bio" rows="3" cols="40" maxlength="500"></textarea>
+    </p>
+    <input type="submit" value="Register">
+
 </form>
 <span style="color: red">{{ message }}</span> 
 <p>
