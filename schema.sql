@@ -22,9 +22,9 @@ CREATE TABLE Comments (
     visibility BOOLEAN
 );
 CREATE TABLE Followers (
-    match_id TEXT UNIQUE,
     user_id INTEGER REFERENCES Users,
-    follow_id INTEGER REFERENCES Users
+    follow_id INTEGER REFERENCES Users,
+    UNIQUE (user_id, follow_id)
 );
 CREATE TABLE Blacklist (
     user_id INTEGER REFERENCES Users,

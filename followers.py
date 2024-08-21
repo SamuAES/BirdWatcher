@@ -15,9 +15,8 @@ def add_follow(username):
         return "You can't follow yourself."
         
     try:
-        match_id = f"{user}+{follow_id}"
-        sql = "INSERT INTO Followers (match_id, user_id, follow_id) VALUES (:match_id, :user_id, :follow_id)"
-        db.session.execute(text(sql), {"match_id":match_id, "user_id":user, "follow_id":follow_id})
+        sql = "INSERT INTO Followers (user_id, follow_id) VALUES (:user_id, :follow_id)"
+        db.session.execute(text(sql), {"user_id":user, "follow_id":follow_id})
         db.session.commit()
         return True
     except:
