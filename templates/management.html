@@ -22,9 +22,9 @@
             {% for moderator in moderators %}
             <li>
                 <p>
-                    {{moderator[1]}}&emsp;  
+                    {{moderator.username}}&emsp;  
                     <form action="/management" method="post">
-                        <input type="hidden" name="demote_username" value="{{moderator[0]}}">
+                        <input type="hidden" name="demote_username" value="{{moderator.username}}">
                         <input type="submit" value="Demote">
                     </form>
                 </p>

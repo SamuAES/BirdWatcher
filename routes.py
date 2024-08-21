@@ -1,12 +1,13 @@
 from app import app, birdlist
-from flask import render_template, request, redirect, session
-import users, sightings, followers
+from flask import render_template, request, redirect, session, make_response
+import users, sightings, followers, comments
+import base64
 
 
 
 @app.route("/", methods=["GET"])
 def index():
-    bird_sightings = sightings.get_sightings()
+    bird_sightings = sightings.get_all_sightings()
     return render_template("index.html", sightings = bird_sightings)
 
 
@@ -91,33 +92,42 @@ def management():
         except:
             pass
  
+
+@app.route("/all_sightings", methods=["GET"])
+def all_sightings():
+    bird_sightings = sightings.get_all_sightings()
+    return render_template("all_sightings.html", sightings = bird_sightings)
     
         
+@app.route("/sighting/<int:id>", methods=["GET", "POST"])
+def sighting_id(id):
 
-
-@app.route("/sightings", methods=["GET", "POST"])
-def show_sightings():
+    bird_sighting = sightings.get_sighting_details(id)
+    
     if request.method == "GET":
-        bird_sightings = sightings.get_sightings()
-        comments = sightings.get_comments()
-        return render_template("sightings.html", sightings = bird_sightings, comments = comments)
+        sighting_comments = comments.get_comments(id)
+        data = sightings.get_image(id)
+        if data is False:
+            return render_template("sighting_details.html", id = id, sighting = bird_sighting, comments = sighting_comments)
+        else:
+            image = base64.b64encode(data).decode("utf-8")
+            return render_template("sighting_details.html", id = id, sighting = bird_sighting, comments = sighting_comments, image = image)
     
     if request.method == "POST":
-        
-        #add new comment
+        # add new comment
         try:    
             sighting_id = request.form["sighting_id"]
-            comment = request.form["new_comment"]
-            sightings.add_comment(sighting_id, comment)
-            return redirect("/sightings")
+            new_comment = request.form["new_comment"]
+            comments.add_comment(sighting_id, new_comment)
+            return redirect(f"/sighting/{id}")
         except:
             pass
-        
+
         #delete comment
         try:
             comment_id = request.form["comment_id"]
-            sightings.delete_comment(comment_id)
-            return redirect("/sightings")
+            comments.delete_comment(comment_id)
+            return redirect(f"/sighting/{id}")
         except:
             pass
         
@@ -125,19 +135,20 @@ def show_sightings():
         try:
             sighting_id = request.form["sighting_id"]
             sightings.delete_sighting(sighting_id)
-            return redirect("/sightings")
+            return redirect(f"/profile/{bird_sighting.username}")
         except:
             pass
-        
 
-        
+     
 
 @app.route("/new_sighting", methods=["GET", "POST"])
 def new_sighting():
     if request.method == "GET":
-        return render_template("new_sighting.html", birdlist = birdlist )
-    if request.method == "POST":
 
+        return render_template("new_sighting.html", birdlist = birdlist )
+    
+    if request.method == "POST":
+        # Check if bird name is valid. (Must choose something.)
         bird_name = request.form["bird_name"]
         if not sightings.valid_bird_name(bird_name):
             return render_template("new_sighting.html", birdlist = birdlist, message="Must choose a bird.")
@@ -145,11 +156,13 @@ def new_sighting():
         time = request.form["time"]
         location = request.form["location"]
         additional_info = request.form["additional_info"]
+        image = request.files["image"]
 
-        if sightings.new_sighting(bird_name, time, location, additional_info):
-            return redirect("/own_page")
+        result = sightings.new_sighting(bird_name, time, location, additional_info, image)
+        if result is True:
+            return redirect("/")
         else:
-            return render_template("new_sighting.html", birdlist = birdlist, message="Failed to post new sighting" )
+            return render_template("new_sighting.html", birdlist = birdlist, message=result )
 
 
 @app.route("/profile/<string:username>", methods=["GET", "POST"])
@@ -158,79 +171,50 @@ def profile(username):
     if username == users.get_username():
         return redirect("/own_page")
 
-    bird_sightings = sightings.get_sightings(users.get_id_by_username(username))
-    comments = sightings.get_comments()
+    bird_sightings = sightings.get_all_sightings(users.get_id_by_username(username))
     follower = followers.is_following(username)
 
     if request.method == "GET":
-        return render_template("profile.html", sightings = bird_sightings, comments = comments, username = username, follower = follower)
+        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower)
     
     if request.method == "POST":
 
-        # Follow / Unfollow button
-        try:
-            button_result = request.form["follow_btn"]
-            
-            # If user wants to unfollow
-            if button_result == "unfollow":
+        button_result = request.form["follow_btn"]
+        
+        # If user wants to unfollow
+        if button_result == "unfollow":
 
-                result = followers.stop_follow(username)
-                
-                if result:
-                    return redirect("/profile/"+username)
-                
-                return render_template("profile.html", sightings = bird_sightings, comments = comments, username = username, follower = follower, message="Something went wrong. Please contact support.")
+            result = followers.stop_follow(username)
             
-            # If user wants to follow
-            result = followers.add_follow(username)
-
             if result:
                 return redirect("/profile/"+username)
-            return render_template("profile.html", sightings = bird_sightings, comments = comments, username = username, follower = follower, message="Something went wrong. Please contact support.")
+            
+            return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
+        
+        # If user wants to follow
+        result = followers.add_follow(username)
 
-        except:
-            pass
-
-        # Add comment
-        try:    
-            sighting_id = request.form["sighting_id"]
-            comment = request.form["new_comment"]
-            sightings.add_comment(sighting_id, comment)
+        if result:
             return redirect("/profile/"+username)
-        except:
-            pass
+        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
 
-        # Delete comment
-        try:
-            comment_id = request.form["comment_id"]
-            sightings.delete_comment(comment_id)
-            return redirect("/profile/"+username)
-        except:
-            pass
 
-        # Delete sighting
-        try:
-            sighting_id = request.form["sighting_id"]
-            sightings.delete_sighting(sighting_id)
-            return redirect("/profile/"+username)
-        except:
-            pass
+
 
 
 @app.route("/own_page", methods=["GET", "POST"])
 def own_page():
     
-    bird_sightings = sightings.get_sightings(users.user_id())
-    comments = sightings.get_comments()
+    bird_sightings = sightings.get_all_sightings(users.user_id())
     followslist = followers.get_followslist()
     followerlist = followers.get_followerlist()
 
     if request.method == "GET":
-        return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, comments = comments)
+        return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist)
     
     if request.method == "POST":
         
-        #follow new user
+        # Follow new user
         try:
             follow_username = request.form["follow_username"]
             result = followers.add_follow(follow_username)
@@ -238,34 +222,11 @@ def own_page():
             if result is True:
                 return redirect("/own_page")
             else:
-                return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, comments = comments, message = result)
+                return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, message = result)
         except:
             pass
         
-        #add new comment
-        try:    
-            sighting_id = request.form["sighting_id"]
-            comment = request.form["new_comment"]
-            sightings.add_comment(sighting_id, comment)
-            return redirect("/own_page")
-        except:
-            pass
-        
-        #delete comment
-        try:
-            comment_id = request.form["comment_id"]
-            sightings.delete_comment(comment_id)
-            return redirect("/own_page")
-        except:
-            pass
-        
-        #delete sighting
-        try:
-            sighting_id = request.form["sighting_id"]
-            sightings.delete_sighting(sighting_id)
-            return redirect("/own_page")
-        except:
-            pass
+
 
 
 

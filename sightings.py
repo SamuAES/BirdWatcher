@@ -3,7 +3,8 @@ from app import birdlist
 import users
 from sqlalchemy.sql import text
 
-def get_sightings(user_id = None):
+
+def get_all_sightings(user_id = None):
     if user_id is None:
         sql = "SELECT U.username, S.bird_name, S.time, S.location, S.id, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id AND S.visibility = true ORDER BY S.time DESC"
         result = db.session.execute(text(sql))
@@ -13,39 +14,69 @@ def get_sightings(user_id = None):
     
     return result.fetchall()
 
-def new_sighting(bird_name, time, location, additional_info):
+
+def get_sighting_details(id):
+    sql = "SELECT U.username, S.bird_name, S.time, S.location, S.additional_info FROM Users U, Sightings S WHERE S.id = :id AND U.id = S.user_id"
+    result = db.session.execute(text(sql), {"id": id})
+    result = result.fetchone()
+    return result
+
+def get_image(id):
+    sql = "SELECT data FROM Images WHERE sighting_id = :id"
+    result = db.session.execute(text(sql), {"id":id})
+    result = result.fetchone()
+    if result is None:
+        return False
+    
+    return result[0]
+
+
+def new_sighting(bird_name, time, location, additional_info, image):
     user_id = users.user_id()
     if user_id == 0:
-        return False
+        return "You must be logged in!"
+    
+    # If no image is sent then add new sighting.
+    name = image.filename
+    if name == "":
+        sql = "INSERT INTO Sightings (user_id, bird_name, time, location, additional_info, visibility ) VALUES (:user_id, :bird_name, :time, :location, :additional_info, true)"
+        db.session.execute(text(sql), {"user_id":user_id, "bird_name":bird_name, "time":time, "location":location, "additional_info":additional_info})
+        db.session.commit()
+        return True
+    
+    
+    # Check for filename and size
+    if not name.endswith(".jpg"):
+        return "Invalid filename. Must be a .jpg type image."
+    data = image.read()
+    if len(data) > 100*1024:
+        return "Too big file"
+    
     sql = "INSERT INTO Sightings (user_id, bird_name, time, location, additional_info, visibility ) VALUES (:user_id, :bird_name, :time, :location, :additional_info, true)"
     db.session.execute(text(sql), {"user_id":user_id, "bird_name":bird_name, "time":time, "location":location, "additional_info":additional_info})
     db.session.commit()
+    
+    # Get sighting id so image may be referenced to it.
+    sql = "SELECT id FROM Sightings WHERE user_id = :user_id AND bird_name = :bird_name AND time = :time AND location = :location"
+    result = db.session.execute(text(sql), {"user_id":user_id, "bird_name":bird_name, "time":time, "location":location})
+    id_number = result.fetchone()
+    if id_number is None:
+        return "Something went wrong"
+    
+    id_number = id_number[0]
+
+    sql = "INSERT INTO Images (sighting_id, name, data, visibility) VALUES (:sighting_id, :name, :data, true)"
+    db.session.execute( text(sql), {"sighting_id":id_number, "name":name, "data":data})
+    db.session.commit()
     return True
 
-def get_comments():
-    sql = "SELECT C.sighting_id, U.username, C.content, C.sent_at, C.id FROM Comments C, Users U WHERE C.user_id = U.id AND visibility = true"
-    result = db.session.execute(text(sql))
-    return result.fetchall()
-
-def add_comment(sighting_id, content):
-    user_id = users.user_id()
-    sql = "INSERT INTO Comments (sighting_id, user_id, content, sent_at, visibility) VALUES (:sighting_id, :user_id, :content, NOW(), true)"
-    db.session.execute(text(sql), {"sighting_id":sighting_id, "user_id":user_id, "content":content})
-    db.session.commit()
 
 def valid_bird_name(bird_name:str) -> bool:
-    """
-    Check if bird name is selected for new sighting.
-    """
+    # Check if a bird is selected.
     if bird_name == "":
         return False
     else:
         return True
-
-def delete_comment(comment_id):
-    sql = "UPDATE Comments SET visibility = false WHERE id = :id"
-    db.session.execute(text(sql), {"id": comment_id})
-    db.session.commit()
 
 def delete_sighting(sighting_id):
     sql = "UPDATE Sightings SET visibility = false WHERE id = :id"

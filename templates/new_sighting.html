@@ -2,8 +2,7 @@
 {% block content %}
 
 
-
-<form action="/new_sighting" method="POST">
+<form action="/new_sighting" method="POST" enctype="multipart/form-data">
     <div class="wrapper">
         <div class="select-btn">
             <span>Select bird</span>
@@ -35,6 +34,12 @@
     <p>
         Additional information: <br>
         <textarea name="additional_info" rows="3" cols="40" maxlength="500"></textarea>
+    </p>
+    <p>
+        Add image:<br>
+
+        <input type="file" name="image">
+
     </p>
     <input type="submit" value="Send">
 </form>

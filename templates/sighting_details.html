@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+
+{% if session.user_id %}
+
+<h1>Sighting info</h1>
+<hr>
+
+<!-- Sighting info. -->
+<p>
+    <i>User:</i> <a href="/profile/{{sighting.username}}">{{ sighting.username }}</a>
+</p>
+<p>
+    <i>Bird:</i> {{ sighting.bird_name }}
+</p>
+<p>
+    <!-- sighting[2] is 'time' and sightings.time... cause error. -->
+    <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M:%S") }}
+</p>
+<p>
+    <i>Location:</i> {{sighting.location}}
+</p>
+<p>
+    <i>Additional info:</i> {{sighting.additional_info}}
+</p>
+<p>
+    {% if image %}
+        <img src="data:image/jpg;base64,{{image}}">
+    {% endif %}
+</p>
+
+<!-- Admin, moderator or user who posted the sighting can delete it. -->
+{% if session.username == sighting.username or session.moderator or session.admin %}
+<form action="/sighting/{{id}}" method="post">
+    <input type="hidden" name="sighting_id" value="{{id}}">
+    <p>
+        <input type="submit" value="Delete sighting">
+    </p>
+</form>
+{% endif %}
+<h2>Comments:</h2>
+{% for comment in comments %}
+
+    <ul>
+    <li><i>user:</i> <a href="/profile/{{comment.username}}"> {{comment.username}} </a>
+
+    <li><i>comment:</i> {{comment.content}}
+
+    <li><i>Sent at:</i> {{ comment.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+    </ul>
+
+    <!-- Admin, moderator or user who posted the comment can delete it. -->
+    {% if session.username == comment.username or session.moderator or session.admin %}
+        <form action="/sighting/{{id}}" method="post">
+            <input type="hidden" name="comment_id" value="{{comment.id}}">
+            <input type="submit" value="Delete comment">
+        </form>
+    {% endif %}
+
+
+{% endfor %}
+<p>
+    <!-- Make new comment. -->
+    <form action="/sighting/{{id}}" method="post">
+        <input type="hidden" name="sighting_id" value="{{id}}">
+        <p>
+        <textarea name="new_comment" rows="3" cols="40"></textarea>
+        </p>
+        <input type="submit" value="Add comment">
+    </form>
+</p>
+
+
+
+<hr>
+
+{% else %}
+
+Log in to see details about the sighting!
+
+{% endif %}
+
+
+
+
+
+{% endblock %}

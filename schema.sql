@@ -31,3 +31,10 @@ CREATE TABLE Blacklist (
     reason TEXT,
     date TIMESTAMP
 );
+CREATE TABLE Images (
+    id SERIAL PRIMARY KEY,
+    sighting_id INTEGER REFERENCES Sightings,
+    name TEXT,
+    data BYTEA,
+    visibility BOOLEAN
+)
