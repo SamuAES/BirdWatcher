@@ -3,37 +3,62 @@
 
 <p>King of the world!</p>
 
-<ul>
-    These options will be added here:
-    <li>If you are admin, you can give and take away moderator rights for users.</li>
-    <li>Admin and moderators can ban and unban users.</li>
-    <li>Admin and moderators can delete comments or sightings.</li>
-</ul>
-
-    {% if session.admin %}
-        Make user moderator:
-        <form action="/management" method="post">
-            <input type="text" name="promote_username">
-            <input type="submit" value="Promote">
-        </form>
-
+{% if session.admin %}
+    <h3>Make user moderator:</h3>
+    
+    <form action="/management" method="post">
         <ul>
-            Moderators:
-            {% for moderator in moderators %}
-            <li>
-                <p>
-                    {{moderator.username}}&emsp;  
-                    <form action="/management" method="post">
-                        <input type="hidden" name="demote_username" value="{{moderator.username}}">
-                        <input type="submit" value="Demote">
-                    </form>
-                </p>
-            </li>
-            {% endfor %}
+            <li><input type="text" name="promote_username" placeholder="username"></li>
+            <li><input type="submit" value="Promote"></li>
         </ul>
-    {% endif %}
+    </form>
+    
 
+    <h3>List of moderators:</h3>
+    <ul>
+        {% for moderator in moderators %}
+        <li>
+            <p>
+                {{moderator.username}}&emsp;  
+                <form action="/management" method="post">
+                    <input type="hidden" name="demote_username" value="{{moderator.username}}">
+                    <input type="submit" value="Demote">
+                </form>
+            </p>
+        </li>
+        {% endfor %}
+    </ul>
+{% endif %}
 
+<h3>Ban user:</h3>
+<form action="/management" method="post">
+    <ul>
+        <li><input type="text" name="ban_username" placeholder="username" required></li>
+        <li><textarea name="reason" rows="3" cols="40" maxlength="500" placeholder="Reason for ban?" required></textarea></li>
+        <li><input type="submit" value="Ban"></li>
+    </ul>
+</form>
+
+<h3>List of banned users:</h3>
+<ul>
+    {% for user in blacklist %}
+    <p>
+        <li><b>{{user.username}}</b></li>
+        <li>
+            Reason for ban:<br>
+            {{user.reason}}
+        </li>
+        <li>
+            Date when banned:<br>
+            {{user.date.strftime("%Y-%m-%d")}}
+        </li>
+        <form action="/management" method="post">
+            <input type="hidden" name="unban_username" value="{{user.username}}">
+            <input type="submit" value="Unban">
+        </form>
+    </p>
+    {% endfor %}
+</ul>
 <p>
     <span style="color: red">{{ message }}</span> 
 </p>

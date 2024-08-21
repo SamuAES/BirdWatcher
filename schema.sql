@@ -33,7 +33,7 @@ CREATE TABLE Followers (
     UNIQUE (user_id, follow_id)
 );
 CREATE TABLE Blacklist (
-    user_id INTEGER REFERENCES Users,
+    user_id INTEGER UNIQUE REFERENCES Users,
     reason TEXT,
     date TIMESTAMP
 );

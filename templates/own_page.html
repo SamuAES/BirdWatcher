@@ -11,9 +11,11 @@
             <li>Age:{{bio.age}}</li>
             <li>Bio:</li>
             <li>
-                <div class="biobox">
-                    {{bio.bio}}
-                </div>
+                {% if bio.bio %}
+                    <div class="biobox">
+                        {{bio.bio}}
+                    </div>
+                {% endif %}
             </li>
         </ul>
     </div>
@@ -50,7 +52,7 @@
 
         <p>
             <!-- sighting[2] is 'time' and sightings.time... cause error. -->
-            <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M:%S") }}
+            <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M") }}
         </p>
         <p>
             <i>Location:</i> {{sighting.location}}

@@ -2,6 +2,7 @@ from app import app, birdlist
 from flask import render_template, request, redirect, session, make_response
 import users, sightings, followers, comments
 import base64
+from os import getenv
 
 
 
@@ -20,10 +21,17 @@ def login():
     elif request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
+
+        if users.check_blacklist(username):
+            return render_template("login.html", message= "That username is banned!" )
+        
         if users.login(username, password):
             return redirect("/own_page")
+        
         else:
-            return render_template("login.html", message= "No username with that name or wrong password." )
+            return render_template("login.html", message= "Wrong username or password." )
+    
+            
 
 @app.route("/logout")
 def logout():
@@ -67,12 +75,13 @@ def management():
             return redirect("/")
 
     moderators = users.get_moderators()
+    blacklist = users.get_blacklist()
 
     if request.method == "GET":    
 
-        return render_template("management.html", moderators = moderators)
+        return render_template("management.html", moderators = moderators, blacklist = blacklist)
     
-    if request.method == "POST":
+    elif request.method == "POST":
 
         # Promote username to moderator
         try:
@@ -82,7 +91,7 @@ def management():
             if result is True:
                 return redirect("/management")
             else:
-                return render_template("management.html", moderators = moderators, message = result)
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = result)
             
         except:
             pass
@@ -94,9 +103,35 @@ def management():
             if result is True:
                 return redirect("/management")
             else:
-                return render_template("management.html", moderators = moderators, message = result)
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = result)
         except:
             pass
+
+        # Ban user
+        try:
+            username = request.form["ban_username"]
+            if username == getenv("admin"):
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = "You don't want to ban admin...")
+            reason = request.form["reason"]
+            result = users.ban_user(users.get_id_by_username(username), reason)
+            if result is True:
+                return redirect("/management")
+            else:
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = result)
+        except:
+            pass
+
+        # Unban user
+        try:
+            username = request.form["unban_username"]
+            result = users.unban_user(users.get_id_by_username(username))
+            if result is True:
+                return redirect("/management")
+            else:
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = result)
+        except:
+            pass
+
  
 
 @app.route("/all_sightings", methods=["GET"])

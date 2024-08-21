@@ -126,3 +126,41 @@ def demote_moderator(user_id):
         return True
     except:
         return "Something went wrong..."
+
+
+
+    
+def get_blacklist():
+    sql = "SELECT U.username, B.reason, B.date FROM Users U, Blacklist B WHERE B.user_id = U.id"
+    result = db.session.execute(text(sql))
+    return result.fetchall()
+
+def check_blacklist(username):
+    id = get_id_by_username(username)
+    if id is False:
+        return False
+    sql = "SELECT user_id FROM Blacklist WHERE user_id = :id"
+    result = db.session.execute(text(sql), {"id": id})
+    result = result.fetchone()
+    if result:
+        return True
+    else:
+        return False
+    
+def ban_user(user_id, reason):
+    try:
+        sql = "INSERT INTO Blacklist (user_id, reason, date) VALUES (:user_id, :reason, NOW())"
+        db.session.execute(text(sql), {"user_id": user_id, "reason": reason})
+        db.session.commit()
+        return True
+    except:
+        return "No user with that name or user is already banned."
+
+def unban_user(user_id):
+    try:
+        sql = "DELETE FROM Blacklist WHERE user_id = :user_id"
+        db.session.execute(text(sql), {"user_id": user_id})
+        db.session.commit()
+        return True
+    except:
+        return "Something went wrong..."
