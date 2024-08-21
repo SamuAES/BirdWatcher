@@ -22,7 +22,7 @@ CREATE TABLE Comments (
     visibility BOOLEAN
 );
 CREATE TABLE Followers (
-    match_id INTEGER UNIQUE,
+    match_id TEXT UNIQUE,
     user_id INTEGER REFERENCES Users,
     follow_id INTEGER REFERENCES Users
 );

@@ -159,28 +159,63 @@ def profile(username):
         return redirect("/own_page")
 
     bird_sightings = sightings.get_sightings(users.get_id_by_username(username))
+    comments = sightings.get_comments()
     follower = followers.is_following(username)
 
     if request.method == "GET":
-        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower)
+        return render_template("profile.html", sightings = bird_sightings, comments = comments, username = username, follower = follower)
     
     if request.method == "POST":
-        
-        button_result = request.form["follow_btn"]
-        
-        if button_result == "unfollow":
 
-            result = followers.stop_follow(username)
+        # Follow / Unfollow button
+        try:
+            button_result = request.form["follow_btn"]
             
+            # If user wants to unfollow
+            if button_result == "unfollow":
+
+                result = followers.stop_follow(username)
+                
+                if result:
+                    return redirect("/profile/"+username)
+                
+                return render_template("profile.html", sightings = bird_sightings, comments = comments, username = username, follower = follower, message="Something went wrong. Please contact support.")
+            
+            # If user wants to follow
+            result = followers.add_follow(username)
+
             if result:
                 return redirect("/profile/"+username)
-            
-            return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
-        
-        result = followers.add_follow(username)
-        if result:
+            return render_template("profile.html", sightings = bird_sightings, comments = comments, username = username, follower = follower, message="Something went wrong. Please contact support.")
+
+        except:
+            pass
+
+        # Add comment
+        try:    
+            sighting_id = request.form["sighting_id"]
+            comment = request.form["new_comment"]
+            sightings.add_comment(sighting_id, comment)
             return redirect("/profile/"+username)
-        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, message="Something went wrong. Please contact support.")
+        except:
+            pass
+
+        # Delete comment
+        try:
+            comment_id = request.form["comment_id"]
+            sightings.delete_comment(comment_id)
+            return redirect("/profile/"+username)
+        except:
+            pass
+
+        # Delete sighting
+        try:
+            sighting_id = request.form["sighting_id"]
+            sightings.delete_sighting(sighting_id)
+            return redirect("/profile/"+username)
+        except:
+            pass
+
 
 @app.route("/own_page", methods=["GET", "POST"])
 def own_page():

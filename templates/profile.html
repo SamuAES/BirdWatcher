@@ -21,18 +21,80 @@
 
 <h2>{{username}} bird sightings:</h2>
 <hr>
+<!-- List all sightings. -->
 {% for sighting in sightings %}
+
+    <!-- Sighting info. -->
     <p>
-        <i>Bird:</i> {{ sighting[0] }}
+        <i>Bird:</i> {{ sighting[1] }}
     </p>
     <p>
-        <i>Time:</i> {{ sighting[1].strftime("%Y-%m-%d %H:%M:%S") }}
+        <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M:%S") }}
     </p>
     <p>
-        <i>Location:</i> {{sighting[2]}}
+        <i>Location:</i> {{sighting[3]}}
     </p>
+
+    <!-- Admin and moderator can delete sighting. -->
+    {% if session.admin or session.moderator %}
+    <form action="/profile/{{username}}" method="post">
+        <input type="hidden" name="sighting_id" value="{{sighting[4]}}">
+        <p>
+            <input type="submit" value="Delete sighting">
+        </p>
+    </form>
+    {% endif %}
+
+    <button onclick="show_comments({{sighting[4]}})">Comments</button>
+
+    <!-- List all comments about the sighting. -->
+    <div id="comments{{sighting[4]}}" style="display: none;">
+        <p>
+            Additional info: {{sighting[5]}}
+        </p>
+        <p>
+            {% for comment in comments %}
+
+                {% if comment[0] == sighting[4] %}
+                    <ul>
+                    <li><i>user:</i> <a href="/profile/{{comment[1]}}"> {{comment[1]}} </a>
+                    
+                    <li><i>comment:</i> {{comment[2]}}
+                    
+                    <li><i>Sent at:</i> {{ comment[3].strftime("%Y-%m-%d %H:%M:%S") }}
+                    </ul>
+
+                    <!-- User can delete own comment. -->
+                    {% if session.username == comment[1] or session.moderator or session.admin %}
+                        <form action="/profile/{{username}}" method="post">
+                            <input type="hidden" name="comment_id" value="{{comment[4]}}">
+                            <input type="submit" value="Delete comment">
+                        </form>
+                    {% endif %}
+
+                {% endif %}
+
+            {% endfor %}
+            
+            <!-- Make new comment. -->
+            <form action="/profile/{{username}}" method="post">
+                <input type="hidden" name="sighting_id" value="{{sighting[4]}}">
+                <p>
+                <textarea name="new_comment" rows="3" cols="40"></textarea>
+                </p>
+                <input type="submit" value="Add comment">
+            </form>
+            
+        </p>
+        
+    </div>
+
     <hr>
 {% endfor %}
+
+<p>
+    <span style="color: red">{{ message }}</span> 
+</p>
 
 {% else %}
 
