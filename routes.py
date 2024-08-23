@@ -42,25 +42,28 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     if request.method == "GET":
-        return render_template("register.html")
+        input_data = []
+        return render_template("register.html", input_data = input_data)
     elif request.method == "POST":
         username = request.form["username"]
         password1 = request.form["password1"]
         password2 = request.form["password2"]
         
-        name = request.form["name"]
+        favourite_bird = request.form["favourite_bird"]
         age = request.form["age"]
         bio = request.form["bio"]
 
+        input_data = [username, password1, password2, favourite_bird, age, bio]
+
         if password1 != password2:
-            return render_template("register.html", message="Passwords are not the same.")
+            return render_template("register.html", input_data = input_data, message="Passwords are not the same.")
         
         elif users.register(username, password1):
-            users.add_bio(name, age, bio)
+            users.add_bio(favourite_bird, age, bio)
             return redirect("/")
         
         else:
-            return render_template("register.html", message="Username is already in use.")
+            return render_template("register.html", input_data = input_data, message="Username is already in use.")
 
 
 @app.route("/management", methods=["GET", "POST"])
@@ -191,25 +194,28 @@ def new_sighting():
     birdnames = [bird[0] for bird in birdnames]
     
     if request.method == "GET":
-        
-        return render_template("new_sighting.html", birdnames = birdnames )
+        input_data = []
+        return render_template("new_sighting.html", birdnames = birdnames, input_data = input_data )
     
     elif request.method == "POST":
         # Check if bird name is valid. (Must choose something.)
         bird_name = request.form["bird_name"]
-        if not sightings.valid_bird_name(bird_name):
-            return render_template("new_sighting.html", birdnames = birdnames, message="Must choose a bird.")
-        
         time = request.form["time"]
         location = request.form["location"]
         additional_info = request.form["additional_info"]
         image = request.files["image"]
 
+        input_data = [bird_name, time, location, additional_info]
+
+        if not sightings.valid_bird_name(bird_name):
+            return render_template("new_sighting.html", birdnames = birdnames, input_data = input_data, message="Must choose a bird.")
+
         result = sightings.new_sighting(bird_name, time, location, additional_info, image)
+
         if result is True:
             return redirect("/")
         else:
-            return render_template("new_sighting.html", birdnames = birdnames, message=result )
+            return render_template("new_sighting.html", birdnames = birdnames, input_data = input_data, message=result )
 
 
 @app.route("/profile/<string:username>", methods=["GET", "POST"])
