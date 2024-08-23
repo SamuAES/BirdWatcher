@@ -2,20 +2,36 @@
 {% block content %}
 <script>topnav_activate('topnav_login')</script>
 
-<form action="/login" method="post">
-<p>
-    Username: <input type="text" name="username">
-</p>
-<p>
-    Password: <input type="password" name="password">
-</p>
-<input type="submit" value="Log in">
-</form>
-
-<span style="color: red">{{ message }}</span> 
-<br>
-<br>
-If you don't have an account, you can sign up <a href="/register">here.</a>
+<div class="container-fluid" style="background-image: url(/static/images/login_image.jpg);">
+    <div class="row vh-100 justify-content-center">
+        <div class="col-3 align-self-center">
+            <div class="card">
+                <div class="card-body">
+                    <h2>Log in!</h2>
+                    <form action="/login" method="post">
+                        <div class="form-group"> 
+                            <label for="username"><b>Username</b></label>
+                            <input type="text" id="username" class="form-control" name="username" minlength="1" maxlength="20" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password"><b>Password</b></label>
+                            <input type="password" id="password" class="form-control" name="password" minlength="1" maxlength="20" required>
+                        </div>
+                        <div style="display: flex; justify-content: center;">
+                            <input type="submit" class="btn btn-primary"  value="Log in">
+                        </div>
+                    </form>
+                    <div class="alert alert-light" style="display: flex; justify-content: center;" role="alert">
+                        <b>{{message}}</b>
+                    </div>
+                    <div class="alert-light" style="display: flex; justify-content: center;">
+                        If you don't have an account, you can sign up &nbsp<a href="/register">here.</a>
+                    </div>
+                </div>    
+            </div>    
+        </div>
+    </div>
+</div>
 
 
 {% endblock %}
