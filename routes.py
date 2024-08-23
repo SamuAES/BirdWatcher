@@ -26,7 +26,7 @@ def login():
             return render_template("login.html", message= "That username is banned!" )
         
         if users.login(username, password):
-            return redirect("/own_page")
+            return redirect("/")
         
         else:
             return render_template("login.html", message= "Wrong username or password." )

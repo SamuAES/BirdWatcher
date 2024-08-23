@@ -4,11 +4,6 @@ body{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-.header{
-  
-}
-
-
 .div1 {
   margin: auto;
   width: 400px;
@@ -22,6 +17,10 @@ body{
   padding: 10px;
 }
 
+.btn-primary{
+  background-color: #04AA6D;
+  border-color: #04AA6D;
+}
 
 /* Add a black background color to the top navigation */
 .topnav {
@@ -32,6 +31,16 @@ body{
 /* Style the links inside the navigation bar */
 .topnav a {
   float: left;
+  color: #f2f2f2;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+/* Style text: Logged in as 'username' */
+.topnav span {
+  float: right;
   color: #f2f2f2;
   text-align: center;
   padding: 14px 16px;
@@ -60,10 +69,11 @@ body{
   color: #fff;
   background: #4285f4;
 }
-.wrapper{
+.wrapper2{
   width: 370px;
   margin: 85px auto 0;
 }
+
 .select-btn, li{
   display: flex;
   align-items: center;
@@ -82,7 +92,7 @@ body{
   font-size: 31px;
   transition: transform 0.3s linear;
 }
-.wrapper.active .select-btn i{
+.wrapper2.active .select-btn i{
   transform: rotate(-180deg);
 }
 .content{
@@ -93,7 +103,7 @@ body{
   border-radius: 7px;
   box-shadow: 0 10px 25px rgba(0,0,0,0.1);
 }
-.wrapper.active .content{
+.wrapper2.active .content{
   display: block;
 }
 .content .search{
@@ -102,7 +112,7 @@ body{
 .search i{
   top: 50%;
   left: 15px;
-  color: #999;
+  color: #c52222;
   font-size: 20px;
   pointer-events: none;
   transform: translateY(-50%);
