@@ -1,3 +1,4 @@
+
 function show_hide_btn(id) {
   var x = document.getElementById(id);
   if (x.style.display === "none") {
@@ -5,6 +6,11 @@ function show_hide_btn(id) {
   } else {
       x.style.display = "none";
   }
+}
+
+function topnav_activate(id) {
+  var current_page = document.getElementById(id)
+  current_page.classList.toggle("active")
 }
 
 

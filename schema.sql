@@ -44,3 +44,15 @@ CREATE TABLE Images (
     data BYTEA,
     visibility BOOLEAN
 );
+CREATE TABLE Birds (
+    orders TEXT,
+    family_sci TEXT,
+    family_en TEXT,
+    genus TEXT,
+    species_sci TEXT,
+    authority TEXT,
+    species_en TEXT PRIMARY KEY,
+    breeding_range TEXT,
+    breeding_range_subregions TEXT,
+    nonbreeding_range TEXT
+    );

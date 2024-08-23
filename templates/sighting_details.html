@@ -14,8 +14,27 @@
     <i>Bird:</i> {{ sighting.bird_name }}
 </p>
 <p>
+    Bird details:
+    <ul>
+        <li>Order: {{bird_details.orders}} </li>
+        <li>Family (scientific): {{bird_details.family_sci}}</li>
+        <li>Family: {{bird_details.family_en}}</li>
+        <li>Genus: {{bird_details.genus}}</li>
+        <li>Species (scientific): {{bird_details.species_sci}}</li>
+        <li>Authority: {{bird_details.authority}}</li>
+        <li>Breeding range: {{bird_details.breeding_range}}
+            {% if bird_details.breeding_range_subregions %}
+                ({{bird_details.breeding_range_subregions}})
+            {% endif %}
+        </li>
+        {% if bird_details.nonbreeding_range %}
+            <li>Nonbreeding range: {{bird_details.nonbreeding_range}}</li>
+        {% endif %}
+    </ul>
+</p>
+<p>
     <!-- sighting[2] is 'time' and sightings.time... cause error. -->
-    <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M:%S") }}
+    <i>Date and time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M") }}
 </p>
 <p>
     <i>Location:</i> {{sighting.location}}
@@ -46,7 +65,7 @@
 
     <li><i>comment:</i> {{comment.content}}
 
-    <li><i>Sent at:</i> {{ comment.sent_at.strftime("%Y-%m-%d %H:%M:%S") }}
+    <li><i>Sent at:</i> {{ comment.sent_at.strftime("%Y-%m-%d %H:%M") }}
     </ul>
 
     <!-- Admin, moderator or user who posted the comment can delete it. -->

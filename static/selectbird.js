@@ -4,18 +4,18 @@ searchInp = wrapper.querySelector("input"),
 options = wrapper.querySelector(".options");
 
 
-function addCountry(selectedCountry) {
+function addBird(selectedBird) {
     options.innerHTML = "";
-    countries.forEach(country => {
-        let isSelected = country == selectedCountry ? "selected" : "";
-        let li = `<li onclick="updateName(this)" class="${isSelected}">${country}</li>`;
+    birdlist.forEach(bird => {
+        let isSelected = bird == selectedBird ? "selected" : "";
+        let li = `<li onclick="updateName(this)" class="${isSelected}">${bird}</li>`;
         options.insertAdjacentHTML("beforeend", li);
     });
 }
-addCountry();
+addBird();
 function updateName(selectedLi) {
     searchInp.value = "";
-    addCountry(selectedLi.innerText);
+    addBird(selectedLi.innerText);
     wrapper.classList.remove("active");
     selectBtn.firstElementChild.innerText = selectedLi.innerText;
     document.getElementById("hiddenInput").value = selectedLi.innerText;
@@ -23,13 +23,13 @@ function updateName(selectedLi) {
 searchInp.addEventListener("keyup", () => {
     let arr = [];
     let searchWord = searchInp.value.toLowerCase();
-    arr = countries.filter(data => {
+    arr = birdlist.filter(data => {
         return data.toLowerCase().startsWith(searchWord);
     }).map(data => {
         let isSelected = data == selectBtn.firstElementChild.innerText ? "selected" : "";
         return `<li onclick="updateName(this)" class="${isSelected}">${data}</li>`;
     }).join("");
-    options.innerHTML = arr ? arr : `<p style="margin-top: 10px;">Oops! Country not found</p>`;
+    options.innerHTML = arr ? arr : `<p style="margin-top: 10px;">Oops! Bird not found</p>`;
 });
 selectBtn.addEventListener("click", () => wrapper.classList.toggle("active"));
 

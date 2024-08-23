@@ -1,29 +1,30 @@
 <!DOCTYPE html>
-
-
-<title>BirdWatcher</title>
-<link rel="stylesheet" href="/static/style.css">
-<script src="/static/script.js"></script>
-
-
+<html>
+    <title>BirdWatcher</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <body>
         <h1>BirdWatcher</h1>
         {% if session.user_id %}
         <div class="topnav" id="topnavDIV">
-            <a class="active" href="/">Home</a>
-            <a class="" href="/all_sightings">Sightings</a>
-            <a class="" href="/new_sighting">New sighting</a>
-            <a class="" href="/own_page">Own page</a>
-            <a class="" href="/logout">Log out</a>
+            <a href="/" id="topnav_home">Home</a>
+            <a href="/all_sightings" id="topnav_all_sightings">Sightings</a>
+            <a href="/new_sighting" id="topnav_new_sighting">New sighting</a>
+            <a href="/own_page" id="topnav_own_page">Own page</a>
+            <a href="/logout" id="topnav_logout">Log out</a>
+            <!-- Show management page to admin and moderator -->
             {% if session.admin or session.moderator %}
-                <a class="" href="/management">Management</a>
+            <a class="" href="/management" id="topnav_management">Management</a>
             {% endif %}
         </div>
         {% else %}
         <div class="topnav">
-            <a class="active" href="/">Home</a>
-            <a class="" href="/all_sightings">Sightings</a>
-            <a class="" href="/register">Sign up!</a>
-            <a class="" href="/login">Log in</a>
+            <a href="/" id="topnav_home">Home</a>
+            <a href="/all_sightings" id="topnav_all_sightings">Sightings</a>
+            <a href="/register" id="topnav_register">Sign up!</a>
+            <a href="/login" id="topnav_login">Log in</a>
         </div>
         {% endif %}
 

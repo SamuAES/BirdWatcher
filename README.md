@@ -27,8 +27,6 @@ BirdWatcher is a web application where you can:
 
 # Still in progress
 
-● Add functionalities to management page so admin and moderators can ban/unban users and delete comments or sightings.
-
 ● Add database for birds so users can get additional information about birds if they click on bird name.
 
 ● Add funtionality that users can search for bird sightings by username or birdname.
@@ -39,11 +37,21 @@ BirdWatcher is a web application where you can:
 
 ● Create a database according to schema.sql
 
+● Load birdlist into your created database from static folder.
+
+    COPY Birds FROM '...\your_own_path\static\birdlist.csv' DELIMITER '|' CSV HEADER;
+
+    Notice the delimiter is |.
+
+    If you are using windows try:
+
+    \copy Birds FROM '.../your_own_path/static/birdlist.csv' DELIMITER '|' CSV HEADER;
+
 ● Create .env file and store there:
 
     DATABASE_URL = postgresql://username:password@host:port/dtabase_name
     SECRET_KEY = 'your secret key'
-    admin = 'username'  #This username will have admin rights.
+    admin = 'username'  (This username will have admin rights.)
 
 ● Install python dependencies from requirements.txt
 

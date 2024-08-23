@@ -1,6 +1,6 @@
-from app import app, birdlist
-from flask import render_template, request, redirect, session, make_response
-import users, sightings, followers, comments
+from app import app
+from flask import render_template, request, redirect, session
+import users, sightings, followers, comments, birds
 import base64
 from os import getenv
 
@@ -143,16 +143,17 @@ def all_sightings():
 @app.route("/sighting/<int:id>", methods=["GET", "POST"])
 def sighting_id(id):
 
-    bird_sighting = sightings.get_sighting_details(id)
+    sighting_details = sightings.get_sighting_details(id)
+    bird_details = birds.get_bird_details(sighting_details.bird_name)
     
     if request.method == "GET":
         sighting_comments = comments.get_comments(id)
         data = sightings.get_image(id)
         if data is False:
-            return render_template("sighting_details.html", id = id, sighting = bird_sighting, comments = sighting_comments)
+            return render_template("sighting_details.html", id = id, sighting = sighting_details, bird_details = bird_details, comments = sighting_comments)
         else:
             image = base64.b64encode(data).decode("utf-8")
-            return render_template("sighting_details.html", id = id, sighting = bird_sighting, comments = sighting_comments, image = image)
+            return render_template("sighting_details.html", id = id, sighting = sighting_details, bird_details = bird_details, comments = sighting_comments, image = image)
     
     elif request.method == "POST":
         # add new comment
@@ -176,7 +177,7 @@ def sighting_id(id):
         try:
             sighting_id = request.form["sighting_id"]
             sightings.delete_sighting(sighting_id)
-            return redirect(f"/profile/{bird_sighting.username}")
+            return redirect(f"/profile/{sighting_details.username}")
         except:
             pass
 
@@ -184,15 +185,20 @@ def sighting_id(id):
 
 @app.route("/new_sighting", methods=["GET", "POST"])
 def new_sighting():
-    if request.method == "GET":
-
-        return render_template("new_sighting.html", birdlist = birdlist )
     
-    if request.method == "POST":
+    birdnames = birds.get_bird_names()
+    # postgres returns a tuple for some reason so we have to parse only the first object
+    birdnames = [bird[0] for bird in birdnames]
+    
+    if request.method == "GET":
+        
+        return render_template("new_sighting.html", birdnames = birdnames )
+    
+    elif request.method == "POST":
         # Check if bird name is valid. (Must choose something.)
         bird_name = request.form["bird_name"]
         if not sightings.valid_bird_name(bird_name):
-            return render_template("new_sighting.html", birdlist = birdlist, message="Must choose a bird.")
+            return render_template("new_sighting.html", birdnames = birdnames, message="Must choose a bird.")
         
         time = request.form["time"]
         location = request.form["location"]
@@ -203,7 +209,7 @@ def new_sighting():
         if result is True:
             return redirect("/")
         else:
-            return render_template("new_sighting.html", birdlist = birdlist, message=result )
+            return render_template("new_sighting.html", birdnames = birdnames, message=result )
 
 
 @app.route("/profile/<string:username>", methods=["GET", "POST"])
