@@ -3,78 +3,82 @@
 
 
 {% if session.user_id %}
-
-<h2>{{username}}</h2>
-<!-- Profile bio -->
-<div id="bio_div" style="display: block;">
-    <ul>
-        {% if bio.name %}
-            <li>Favourite bird: {{bio.name}}</li>
-        {% endif %}
-        {% if bio.name %}
-            <li>Age:{{bio.age}}</li>
-        {% endif %}
-        {% if bio.name %}
-            <li>Bio:</li>  
-            <li>
-                <div class="biobox">
-                    {{bio.bio}}
+<div class="container-fluid" style="background-image: url(/static/images/birds2.jpg)">
+    <div class="row justify-content-around vh-100" style="margin-top: 25px; margin-bottom: 25px;">
+        <!-- Usernames sightings sightings -->
+        <div class="col-4">
+            <div class="card">
+                <h5 class="card-header">{{username}} bird sightings</h5>
+                <div class="sightings-box">
+                    {% for sighting, nof_comments in sightings %}
+                        <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
+                            <div class="card" style="margin: 5px;">
+                                <div class="card-body">
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <h5 class="card-title">{{ sighting.bird_name }}</h5>
+                                        </div>
+                                        <div class="col" style="text-align: end;">
+                                            <p class="card-text">{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <p class="card-text">{{ sighting.location }}</p>
+                                        </div>
+                                        <div class="col" style="text-align: end;">
+                                            <p class="card-text">Comments: {{ nof_comments }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
                 </div>
-            </li>
-        {% endif %}
-    </ul>
+            </div>
+        </div>
+        <div class="col-4">
+            <!-- Usernames profile -->
+            <div class="card" id="profile_card">
+                <h5 class="card-header">{{username}} profile</h5>
+                <div class="card-body">
+                    <label for="favourite_bird1"><b>Favourite bird:</b></label>
+                    <p class="card-text" id="favourite_bird1">{{bio.favourite_bird}}</p>
+                    <label for="age1"><b>Age:</b></label>
+                    <p class="card-text" id="age1">{{bio.age}}</p>
+                    <label for="bio1"><b>Bio:</b></label>
+                    <p class="card-text" id="bio1">{{bio.bio}}</p>
+                </div>
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    {% if follower %}
+                    <form action="/profile/{{username}}" method="POST">
+                            <input type="hidden" name="follow_btn" value="unfollow">
+                            <input type="submit" class="btn btn-primary" value="Unfollow {{username}}">
+                    </form>
+                    {% else %}
+                        <form action="/profile/{{username}}" method="POST">
+                                <input type="hidden" name="follow_btn" value="follow">
+                                <input type="submit" class="btn btn-primary" value="Follow {{username}}">
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-
-
-
-    {% if follower %}
-        <form action="/profile/{{username}}" method="POST">
-            <p>
-                <input type="hidden" name="follow_btn" value="unfollow">
-                <input type="submit" value="Unfollow {{username}}">
-            </p>
-        </form>
-    {% else %}
-        <form action="/profile/{{username}}" method="POST">
-            <p>
-                <input type="hidden" name="follow_btn" value="follow">
-                <input type="submit" value="Follow {{username}}">
-            </p>
-        </form>
-    {% endif %}
-
-<h2>{{username}} bird sightings:</h2>
-<hr>
-<!-- List all sightings. -->
-{% for sighting in sightings %}
-
-    <!-- Sighting info. -->
-    <h3>
-        <a href="/sighting/{{sighting.id}}"> {{ sighting.bird_name }} </a>
-    </h3>
-
-    <p>
-        <!-- sighting[2] is 'time' and sightings.time... cause error. -->
-        <i>Time:</i> {{ sighting[3].strftime("%Y-%m-%d %H:%M") }}
-    </p>
-    <p>
-        <i>Location:</i> {{sighting.location}}
-    </p>
-
-    <hr>
-
-{% endfor %}
-
-<p>
-    <span style="color: red">{{ message }}</span> 
-</p>
+<style type="text/css">
+    .sightings-box {max-height: 700px; overflow-y: auto;}
+    .sightings-box-content:hover .card{background-color: #04AA6D;}
+    .sightings-box-content:hover .card-header {background-color: #03774c;} 
+    .sightings-box-content:hover .card-title {color: white;}
+    .sightings-box-content:hover .card-text {color: white;}
+</style>
 
 {% else %}
 
 <p>Log in to view other people sightings!</p>
 
 {% endif %}
-
 
 
 {% endblock %}

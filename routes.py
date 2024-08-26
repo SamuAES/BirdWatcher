@@ -94,7 +94,7 @@ def management():
             if result is True:
                 return redirect("/management")
             else:
-                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = result)
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, moderator_message = result)
             
         except:
             pass
@@ -106,7 +106,7 @@ def management():
             if result is True:
                 return redirect("/management")
             else:
-                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = result)
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, moderator_message = result)
         except:
             pass
 
@@ -114,13 +114,13 @@ def management():
         try:
             username = request.form["ban_username"]
             if username == getenv("admin"):
-                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = "You don't want to ban admin...")
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, ban_message = "You don't want to ban admin...")
             reason = request.form["reason"]
             result = users.ban_user(users.get_id_by_username(username), reason)
             if result is True:
                 return redirect("/management")
             else:
-                return render_template("management.html", moderators = moderators, blacklist = blacklist, message = result)
+                return render_template("management.html", moderators = moderators, blacklist = blacklist, ban_message = result)
         except:
             pass
 
@@ -226,11 +226,12 @@ def profile(username):
         return redirect("/own_page")
 
     bird_sightings = sightings.get_all_sightings(users.get_id_by_username(username))
+    nof_comments = [comments.get_nof_comments(sighting.id)[0] for sighting in bird_sightings]
     follower = followers.is_following(username)
     bio = users.get_bio(users.get_id_by_username(username))
 
     if request.method == "GET":
-        return render_template("profile.html", sightings = bird_sightings, username = username, follower = follower, bio = bio)
+        return render_template("profile.html", sightings = zip(bird_sightings, nof_comments), username = username, follower = follower, bio = bio)
     
     if request.method == "POST":
 

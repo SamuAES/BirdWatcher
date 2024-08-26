@@ -7,7 +7,7 @@
 <!-- List all sightings. -->
 <div class="container-fluid" style="background-image: url(/static/images/birds2.jpg)">
     <div class="row justify-content-center vh-100" style="margin-top: 25px; margin-bottom: 25px;">
-        <div class="col-3 align-self-center">
+        <div class="col-5 align-self-center">
             <div class="card">
                 <h5 class="card-header">All bird sightings:</h5>
                 <div class="sightings-box">
@@ -15,21 +15,38 @@
                         <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
                             <div class="card" style="margin: 5px;">
                                 <div class="card-header">
-                                    <a href="/profile/{{sighting.username}}">{{ sighting.username }}</a>
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <h6><a href="/profile/{{sighting.username}}">{{ sighting.username }}</a></h6>
+                                        </div>
+                                        <div class="col" style="text-align: end;">
+                                            <h6>{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</h6>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                                 <div class="card-body">
                                     <h5 class="card-title">{{ sighting.bird_name }}</h5>
-                                    <p class="card-text">{{ sighting.location }}</p>
-                                    <p class="card-text">{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</p>
-                                    <p class="card-text">Comments: {{ nof_comments }}</p>
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <p class="card-text">{{ sighting.location }}</p>
+                                        </div>
+                                        <div class="col" style="text-align: end;">
+                                            <p class="card-text">Comments: {{ nof_comments }}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    
                                 </div>
                             </div>
                         </div>
                     {% endfor %}
                 </div>
+                {% if session.user_id %}
                 <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
                     <a href="/new_sighting" class="btn btn-primary">Post new sighting!</a>
                 </div>
+                {% endif %}
             </div>
         </div>
     </div>

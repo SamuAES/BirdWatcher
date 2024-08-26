@@ -6,7 +6,7 @@
 <div class="container-fluid" style="background-image: url(/static/images/birds2.jpg)">
     <div class="row justify-content-around vh-100" style="margin-top: 25px;">
         <!-- Own sightings -->
-        <div class="col-3">
+        <div class="col-4">
             <div class="card overflow-auto">
                 <h5 class="card-header">Your own sightings</h5>
                 <div class="sightings-box">    
@@ -14,10 +14,22 @@
                         <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
                             <div class="card" style="margin: 5px;">
                                 <div class="card-body">
-                                    <h5 class="card-title">{{ sighting.bird_name }}</h5>
-                                    <p class="card-text">{{ sighting.location }}</p>
-                                    <p class="card-text">{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</p>
-                                    <p class="card-text">Comments: {{ nof_comments }}</p>
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <h5 class="card-title">{{ sighting.bird_name }}</h5>
+                                        </div>
+                                        <div class="col" style="text-align: end;">
+                                            <p class="card-text">{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</p>
+                                        </div>
+                                    </div>
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <p class="card-text">{{ sighting.location }}</p>
+                                        </div>
+                                        <div class="col" style="text-align: end;">
+                                            <p class="card-text">Comments: {{ nof_comments }}</p>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -27,7 +39,6 @@
                     <a href="/new_sighting" class="btn btn-primary">Post new sighting!</a>
                 </div>
             </div>
-
         </div>
         <div class="col-4">
             <!-- Profile -->
