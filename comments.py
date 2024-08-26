@@ -14,6 +14,11 @@ def get_comments(sighting_id):
     result = db.session.execute(text(sql), {"id": sighting_id})
     return result.fetchall()
 
+def get_nof_comments(sighting_id):
+    sql = "SELECT COUNT(*) FROM Comments WHERE sighting_id = :sighting_id"
+    result = db.session.execute(text(sql), {"sighting_id":sighting_id})
+    return result.fetchone()
+
 def delete_comment(comment_id):
     sql = "UPDATE Comments SET visibility = false WHERE id = :id"
     db.session.execute(text(sql), {"id": comment_id})

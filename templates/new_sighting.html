@@ -1,72 +1,89 @@
 {% extends "layout.html" %}
 {% block content %}
 <script>topnav_activate('topnav_new_sighting')</script>
+<div class="container-fluid" style="background-image: url(/static/images/new_bird_image.jpg)">
+    <div class="row vh-100 justify-content-center">
+        <div class="col-6 align-self-center">
+            <div class="card">
+                <div class="card-body">
+                    <h2 style="text-align: center;">Post new sighting</h2>
+                    <form action="/new_sighting" method="POST" enctype="multipart/form-data">
+                        <!-- birdname selector -->
+                        <div class="wrapper">
+                            <div class="select-btn">
+                                {% if input_data[0] %}
+                                    <span>{{input_data[0]}}</span>
+                                    <input type="hidden" id="hiddenInput" value="{{input_data[0]}}" name="bird_name">
+                                {% else %}
+                                    <span>Select bird</span>
+                                    <input type="hidden" id="hiddenInput" value="" name="bird_name">
+                                {% endif %}
+                                <i class="uil uil-angle-down"></i>
+                            </div>
+                            <div class="content">
+                                <div class="search">
+                                    <i class="uil uil-search"></i>
+                                    <input id="searchInput" spellcheck="false" type="text" placeholder="search">
+                                </div>
+                                <ul class="options"></ul>
+                            </div>
+                            <script> let birdlist = {{ birdnames|tojson }}; </script>
+                            <script src="/static/selectbird.js"></script>
+                        </div>
+                        <!-- Date and time --> 
+                        <div class="form-group">
+                            <label for="dt"><b>Date and time</b></label>
+                            <input type="datetime-local" class="form-control" id="dt" name="time" min="1900-01-01T00:00" value="{{input_data[1]}}" required >
+                        </div>
+                            <!-- Set datetime-local input value and max date to current time. -->
+                        {% if not input_data[1] %}
+                        <script>
+                            var dateVal = new Date();
+                            var day = dateVal.getDate().toString().padStart(2, "0");
+                            var month = (1 + dateVal.getMonth()).toString().padStart(2, "0");
+                            var hour = dateVal.getHours().toString().padStart(2, "0");
+                            var minute = dateVal.getMinutes().toString().padStart(2, "0");
+                            var inputDate = dateVal.getFullYear() + "-" + (month) + "-" + (day) + "T" + (hour) + ":" + (minute);
+                            document.getElementById("dt").value = inputDate;
+                            document.getElementById("dt").setAttribute("max", inputDate)
+                        </script>
+                        {% endif %}
+                        <!-- Location -->
+                        <div class="form-group">
+                            <label for="location"><b>Location</b></label>
+                            <input type="text" class="form-control" id="location" name="location" min="1" max="50" value="{{input_data[2]}}" required>
+                        </div>
+                        <!-- Additional info -->
+                        <div class="form-group">
+                            <label for="additional_info"><b>Additional info</b></label>
+                            <textarea id="additional_info" class="form-control" name="additional_info" rows="3" cols="40" maxlength="500">{{input_data[3]}}</textarea>
+                        </div>
+                        <!-- Add image -->
+                        <div class="custom-file">
+                            <input type="file" id="image" class="custom-file" name="image">
+                            <label for="image" class="custom-file-label"><b>Add image</b></label>
+                        </div>
+                        <script type="text/javascript">
 
-
-<form action="/new_sighting" method="POST" enctype="multipart/form-data">
-    <!-- birdname selector -->
-    <div class="wrapper2">
-        <div class="select-btn">
-            {% if input_data[0] %}
-                <span>{{input_data[0]}}</span>
-                <input type="hidden" id="hiddenInput" value="{{input_data[0]}}" name="bird_name">
-            {% else %}
-                <span>Select bird</span>
-                <input type="hidden" id="hiddenInput" value="" name="bird_name">
-            {% endif %}
-            <i class="uil uil-angle-down"></i>
+                            $('.custom-file input').change(function (e) {
+                                if (e.target.files.length) {
+                                    $(this).next('.custom-file-label').html(e.target.files[0].name);
+                                }
+                            });
+                        
+                        </script>
+                        <div class="alert alert-light" style="display: flex; justify-content: center;" role="alert">
+                            <b>{{message}}</b>
+                        </div>
+                        <div style="display: flex; justify-content: center;">
+                            <input type="submit" class="btn btn-primary" value="Send">
+                        </div>
+                    </form>
+                </div>    
+            </div>    
         </div>
-        <div class="content">
-            <div class="search">
-                <i class="uil uil-search"></i>
-                <input spellcheck="false" type="text" placeholder="search">
-            </div>
-            <ul class="options"></ul>
-        </div>
-        <script> let birdlist = {{ birdnames|tojson }}; </script>
-        <script src="/static/selectbird.js"></script>
     </div>
-
-    
-
-    <p>
-        
-        Time and date: <input id="dt" type="datetime-local" name="time" min="1900-01-01T00:00" value="{{input_data[1]}}" required >
-        <!-- Set datetime-local input value and max date to current time. -->
-        {% if not input_data[1] %}
-        <script>
-            var dateVal = new Date();
-            var day = dateVal.getDate().toString().padStart(2, "0");
-            var month = (1 + dateVal.getMonth()).toString().padStart(2, "0");
-            var hour = dateVal.getHours().toString().padStart(2, "0");
-            var minute = dateVal.getMinutes().toString().padStart(2, "0");
-            var inputDate = dateVal.getFullYear() + "-" + (month) + "-" + (day) + "T" + (hour) + ":" + (minute);
-            document.getElementById("dt").value = inputDate;
-            document.getElementById("dt").setAttribute("max", inputDate)
-        </script>
-        {% endif %}
-
-    </p>
-    <p>
-        Location: <input type="text" name="location" min="1" max="50" value="{{input_data[2]}}" required>
-    </p>
-    <p>
-        Additional information: <br>
-        <textarea name="additional_info" rows="3" cols="40" maxlength="500">{{input_data[3]}}</textarea>
-    </p>
-    <p>
-        Add image:<br>
-
-        <input type="file" name="image">
-
-    </p>
-    <input type="submit" value="Send">
-</form>
-<p>
-    <span style="color: red">{{ message }}</span>
-</p>
-<a href="/sightings">Cancel</a>
-
+</div>
 
 
 {% endblock %}

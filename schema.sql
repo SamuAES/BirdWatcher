@@ -6,7 +6,7 @@ CREATE TABLE Users (
 );
 CREATE TABLE Bios (
     user_id INTEGER PRIMARY KEY REFERENCES Users,
-    name TEXT,
+    favourite_bird TEXT,
     age TEXT,
     bio TEXT
 );

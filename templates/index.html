@@ -5,7 +5,7 @@
 <script>topnav_activate('topnav_home')</script>
 
 <br>
-<div class="div1">
+<div>
     <img src="/static/images/frontpage_bird.jpg" width="400" height="550"/>
     <br>
     Ultimate fun! Watch birds and post your sightings!
@@ -25,7 +25,7 @@
 
     <p>
         <!-- sighting[2] is 'time' and sightings.time... cause error. -->
-        <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M") }}
+        <i>Time:</i> {{ sighting[3].strftime("%Y-%m-%d %H:%M") }}
     </p>
     <p>
         <i>Location:</i> {{sighting.location}}

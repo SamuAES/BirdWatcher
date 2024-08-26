@@ -14,18 +14,15 @@ function topnav_activate(id) {
 }
 
 
-function edit_bio_btn(bio_id, edit_id, btn_id) {
-  var bio = document.getElementById(bio_id);
-  var edit = document.getElementById(edit_id);
-  const button = document.getElementById(btn_id);
+function edit_profile_btn(profile_card, edit_profile_card) {
+  var profile_card = document.getElementById(profile_card);
+  var edit_profile_card = document.getElementById(edit_profile_card);
 
-  if (bio.style.display === "none") {
-      bio.style.display = "block";
-      edit.style.display = "none";
-      button.innerHTML = 'Cancel'
+  if (profile_card.style.display === "block") {
+      profile_card.style.display = "none";
+      edit_profile_card.style.display = "block";
   } else {
-      bio.style.display = "none";
-      edit.style.display = "block";
-      button.innerHTML = 'Edit bio'
+      profile_card.style.display = "block";
+      edit_profile_card.style.display = "none";
   }
 }

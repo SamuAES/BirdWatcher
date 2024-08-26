@@ -2,103 +2,120 @@
 {% block content %}
 <script>topnav_activate('topnav_own_page')</script>
 
-<div class="container">
-    {% if session.user_id %}
-        
-        <h2>Your profile:</h2>
-        <!-- Profile details -->
-        <div id="bio_div" style="display: block;">
-            <ul>
-                <li>Favourite bird:{{bio.name}}</li>
-                <li>Age:{{bio.age}}</li>
-                <li>Bio:</li>
-                <li>
-                    {% if bio.bio %}
-                        <div class="biobox">
-                            {{bio.bio}}
+{% if session.user_id %}
+<div class="container-fluid" style="background-image: url(/static/images/birds2.jpg)">
+    <div class="row justify-content-around vh-100" style="margin-top: 25px;">
+        <!-- Own sightings -->
+        <div class="col-3">
+            <div class="card overflow-auto">
+                <h5 class="card-header">Your own sightings</h5>
+                <div class="sightings-box">    
+                    {% for sighting, nof_comments in sightings %}
+                        <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
+                            <div class="card" style="margin: 5px;">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ sighting.bird_name }}</h5>
+                                    <p class="card-text">{{ sighting.location }}</p>
+                                    <p class="card-text">{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</p>
+                                    <p class="card-text">Comments: {{ nof_comments }}</p>
+                                </div>
+                            </div>
                         </div>
-                    {% endif %}
-                </li>
-            </ul>
+                    {% endfor %}
+                </div>
+                <div style="display: flex; justify-content: center; margin: 10px;">
+                    <a href="/new_sighting" class="btn btn-primary">Post new sighting!</a>
+                </div>
+            </div>
+
         </div>
-
-        <div id="edit_bio_div" style="display: none;">
-            <form action="/own_page" method="post">
-                <ul>
-                    <li>Favourite bird: <input type="text" name="name" minlength="2" maxlength="40" value="{{bio.name}}"></li>
-                    <li>Age: <input type="number" name="age" min="1" max="120" value="{{bio.age}}"></li>
-                    <li>Bio:</li>
-                    <li>
-                        <textarea name="bio" rows="3" cols="40" maxlength="500">{{bio.bio}}</textarea>
-                    </li>
-                    <li><input type="submit" value="Update"></li>
-                </ul>
-            </form>
+        <div class="col-4">
+            <!-- Profile -->
+            <div class="card" id="profile_card" style="display: block;">
+                <h5 class="card-header">Your profile</h5>
+                <div class="card-body">
+                    <label for="favourite_bird1"><b>Favourite bird:</b></label>
+                    <p class="card-text" id="favourite_bird1">{{bio.favourite_bird}}</p>
+                    <label for="age1"><b>Age:</b></label>
+                    <p class="card-text" id="age1">{{bio.age}}</p>
+                    <label for="bio1"><b>Bio:</b></label>
+                    <p class="card-text" id="bio1">{{bio.bio}}</p>
+                </div>
+                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                    <button class="btn btn-primary" onclick="edit_profile_btn('profile_card', 'edit_profile_card')">Edit your profile</button>
+                </div>
+            </div>
+            <!-- Edit profile -->
+            <div class="card" id="edit_profile_card" style="display: none;">
+                <h5 class="card-header">Your profile</h5>
+                <div class="card-body">
+                    <form action="/own_page" method="post">
+                        <div class="form-group"> 
+                            <label for="favourite_bird2"><b>Favourite bird:</b></label>
+                            <input type="text" id="favourite_bird2" class="form-control" name="favourite_bird" minlength="2" maxlength="40" value="{{bio.favourite_bird}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="age2"><b>Age:</b></label>
+                            <input type="number" id="age2" class="form-control" name="age" min="1" max="120" value="{{bio.age}}">
+                        </div>
+                        <div class="form-group">
+                            <label for="bio2"><b>Bio:</b></label>
+                            <textarea id="bio2" class="form-control" name="bio"  rows="3"  maxlength="500" aria-describedby="bioHelp">{{bio.bio}}</textarea>
+                            <small id="bioHelp" class="form-text text-muted">Tell something about yourself.</small>
+                        </div>
+                        <div style="display: flex; justify-content: center;">
+                            <input type="submit" class="btn btn-primary" onclick="edit_profile_btn('profile_card', 'edit_profile_card')" value="Update">
+                        </div>
+                    </form>
+                </div>    
+            </div>
+            <!-- Users followers -->
+            <div class="card">
+                <h5 class="card-header">Your followers</h5>
+                <div class="card-body">
+                    {% for username in followers %}
+                    <p class="card-text"><a href="/profile/{{username[0]}}">{{username[0]}}</a></p> 
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Users own follows -->
+            <div class="card" style="margin-bottom: 20px;">
+                <h5 class="card-header">You are following</h5>
+                <div class="card-body">
+                    {% for username in follows %}
+                    <p class="card-text"><a href="/profile/{{username[0]}}">{{username[0]}}</a></p> 
+                    {% endfor %}
+                    <form action="/own_page" method="post">
+                        <div class="form-group"> 
+                            <label for="start_follow"><b>Start following</b></label>
+                            <input type="text" id="start_follow" class="form-control" name="follow_username" minlength="1" maxlength="30">
+                        </div>
+                        <div class="alert alert-light" style="display: flex; justify-content: center;" role="alert">
+                            <b>{{message}}</b>
+                        </div>
+                        <div style="display: flex; justify-content: center;">
+                            <input type="submit" class="btn btn-primary" value="Follow">
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
-
-
-        <button id="btn" onclick="edit_bio_btn('edit_bio_div', 'bio_div', 'btn')">Edit bio</button>
-
-        
-
-        <h2>Your own bird sightings:</h2>
-        <hr>
-
-        <!-- List all sightings. -->
-        {% for sighting in sightings %}
-
-            <!-- Sighting info. -->
-            <h3>
-                <a href="/sighting/{{sighting.id}}"> {{ sighting.bird_name }} </a>
-            </h3>
-
-            <p>
-                <!-- sighting[2] is 'time' and sightings.time... cause error. -->
-                <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M") }}
-            </p>
-            <p>
-                <i>Location:</i> {{sighting.location}}
-            </p>
-
-            <hr>
-
-        {% endfor %}
-
-        <h2>You are following:</h2>
-        <ul>
-            {% for username in follows %}
-                <li>
-                    <a href="/profile/{{username[0]}}">{{username[0]}}</a>
-                </li>
-            {% endfor %}
-        </ul>
-
-        Start following:
-        <form action="/own_page" method="post">
-            <input type="text" name="follow_username">
-            <input type="submit" value="Follow">
-        </form>
-
-        <p>
-            <span style="color: red">{{ message }}</span> 
-        </p>
-
-        <h2>People who are following you:</h2>
-        <ul>
-            {% for username in followers %}
-                <li>
-                    <a href="/profile/{{username[0]}}">{{username[0]}}</a>
-                </li>
-            {% endfor %}
-        </ul>
-
-
-    {% else %}
-
-        <p>Log in to view your own page!</p>
-
-    {% endif %}
-
+    </div>
 </div>
+<style type="text/css">
+    .sightings-box {max-height: 700px; overflow-y: auto;}
+    .sightings-box-content:hover .card{background-color: #04AA6D;}
+    .sightings-box-content:hover .card-header {background-color: #03774c;} 
+    .sightings-box-content:hover .card-title {color: white;}
+    .sightings-box-content:hover .card-text {color: white;}
+</style>
+
+
+{% else %}
+
+<p>Log in to view your own page!</p>
+
+{% endif %}
+
 {% endblock %}
 

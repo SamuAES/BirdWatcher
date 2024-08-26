@@ -4,32 +4,43 @@
 
 <input type="hidden" id="current_page" value="topnav_all_sightings">
 
-<h1>Bird sightings:</h1>
-<hr>
 <!-- List all sightings. -->
-{% for sighting in sightings %}
-
-    <!-- Sighting info. -->
-    <h3>
-        <a href="/sighting/{{sighting.id}}"> {{ sighting.bird_name }} </a>
-    </h3>
-    <p>
-        <i>User:</i> <a href="/profile/{{sighting.username}}">{{ sighting.username }}</a>
-    </p>
-
-    <p>
-        <i>Time:</i> {{ sighting[2].strftime("%Y-%m-%d %H:%M") }}
-    </p>
-    <p>
-        <i>Location:</i> {{sighting.location}}
-    </p>
-
-    <hr>
-
-{% endfor %}
-
-
-
+<div class="container-fluid" style="background-image: url(/static/images/birds2.jpg)">
+    <div class="row justify-content-center vh-100" style="margin-top: 25px; margin-bottom: 25px;">
+        <div class="col-3 align-self-center">
+            <div class="card">
+                <h5 class="card-header">All bird sightings:</h5>
+                <div class="sightings-box">
+                    {% for sighting, nof_comments in sightings %}
+                        <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
+                            <div class="card" style="margin: 5px;">
+                                <div class="card-header">
+                                    <a href="/profile/{{sighting.username}}">{{ sighting.username }}</a>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ sighting.bird_name }}</h5>
+                                    <p class="card-text">{{ sighting.location }}</p>
+                                    <p class="card-text">{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</p>
+                                    <p class="card-text">Comments: {{ nof_comments }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
+                    <a href="/new_sighting" class="btn btn-primary">Post new sighting!</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style type="text/css">
+    .sightings-box {max-height: 700px; overflow-y: auto;}
+    .sightings-box-content:hover .card{background-color: #04AA6D;}
+    .sightings-box-content:hover .card-header {background-color: #03774c;} 
+    .sightings-box-content:hover .card-title {color: white;}
+    .sightings-box-content:hover .card-text {color: white;}
+</style>
 
 
 {% endblock %}

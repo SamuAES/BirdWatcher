@@ -1,7 +1,8 @@
-const wrapper2 = document.querySelector(".wrapper2"),
-selectBtn = wrapper2.querySelector(".select-btn"),
-searchInp = wrapper2.querySelector("input"),
-options = wrapper2.querySelector(".options");
+
+const wrapper = document.querySelector(".wrapper"),
+selectBtn = wrapper.querySelector(".select-btn"),
+searchInp = wrapper.querySelector(".search input"),
+options = wrapper.querySelector(".options");
 
 
 function addBird(selectedBird) {
@@ -16,7 +17,7 @@ addBird();
 function updateName(selectedLi) {
     searchInp.value = "";
     addBird(selectedLi.innerText);
-    wrapper2.classList.remove("active");
+    wrapper.classList.remove("active");
     selectBtn.firstElementChild.innerText = selectedLi.innerText;
     document.getElementById("hiddenInput").value = selectedLi.innerText;
 }
@@ -31,6 +32,6 @@ searchInp.addEventListener("keyup", () => {
     }).join("");
     options.innerHTML = arr ? arr : `<p style="margin-top: 10px;">Oops! Bird not found</p>`;
 });
-selectBtn.addEventListener("click", () => wrapper2.classList.toggle("active"));
+selectBtn.addEventListener("click", () => wrapper.classList.toggle("active"));
 
 

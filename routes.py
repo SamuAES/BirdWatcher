@@ -140,7 +140,8 @@ def management():
 @app.route("/all_sightings", methods=["GET"])
 def all_sightings():
     bird_sightings = sightings.get_all_sightings()
-    return render_template("all_sightings.html", sightings = bird_sightings)
+    nof_comments = [comments.get_nof_comments(sighting.id)[0] for sighting in bird_sightings]
+    return render_template("all_sightings.html", sightings = zip(bird_sightings,nof_comments) )
     
         
 @app.route("/sighting/<int:id>", methods=["GET", "POST"])
@@ -260,12 +261,13 @@ def profile(username):
 def own_page():
     
     bird_sightings = sightings.get_all_sightings(users.user_id())
+    nof_comments = [comments.get_nof_comments(sighting.id)[0] for sighting in bird_sightings]
     followslist = followers.get_followslist()
     followerlist = followers.get_followerlist()
     bio = users.get_bio(users.user_id())
 
     if request.method == "GET":
-        return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, bio = bio)
+        return render_template("own_page.html", sightings = zip(bird_sightings,nof_comments), follows = followslist, followers = followerlist, bio = bio)
     
     elif request.method == "POST":
 
@@ -277,19 +279,19 @@ def own_page():
             if result is True:
                 return redirect("/own_page")
             else:
-                return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, bio = bio, message = result)
+                return render_template("own_page.html", sightings = zip(bird_sightings,nof_comments), follows = followslist, followers = followerlist, bio = bio, message = result)
         except:
             pass
         
         # Edit bio
         try:
-            name = request.form["name"]
+            favourite_bird = request.form["favourite_bird"]
             age = request.form["age"]
             bio = request.form["bio"]
-            if users.edit_bio(name, age, bio):
+            if users.edit_bio(favourite_bird, age, bio):
                 return redirect("/own_page")
         except:
-            return render_template("own_page.html", sightings = bird_sightings, follows = followslist, followers = followerlist, bio = bio, message = "Wasn't able to update profile. Please contact support.")
+            return render_template("own_page.html", sightings = zip(bird_sightings,nof_comments), follows = followslist, followers = followerlist, bio = bio, message = "Wasn't able to update profile. Please contact support.")
 
 
 

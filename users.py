@@ -47,21 +47,21 @@ def register(username, password):
         return False
     return login(username, password)
 
-def add_bio(name, age, bio):
+def add_bio(favourite_bird, age, bio):
     try:
         id = user_id()
-        sql = "INSERT INTO Bios (user_id, name, age, bio) VALUES (:id, :name, :age, :bio)"
-        db.session.execute(text(sql), {"id":id, "name":name, "age":age, "bio":bio})
+        sql = "INSERT INTO Bios (user_id, favourite_bird, age, bio) VALUES (:id, :favourite_bird, :age, :bio)"
+        db.session.execute(text(sql), {"id":id, "favourite_bird":favourite_bird, "age":age, "bio":bio})
         db.session.commit()
         return True
     except:
         return False
 
-def edit_bio(name, age, bio):
+def edit_bio(favourite_bird, age, bio):
     try:
         id = user_id()
-        sql = "UPDATE Bios SET name = :name, age = :age, bio = :bio WHERE user_id = :id"
-        db.session.execute(text(sql), {"id":id, "name":name, "age":age, "bio":bio})
+        sql = "UPDATE Bios SET favourite_bird = :favourite_bird, age = :age, bio = :bio WHERE user_id = :id"
+        db.session.execute(text(sql), {"id":id, "favourite_bird":favourite_bird, "age":age, "bio":bio})
         db.session.commit()
         return True
     except:
@@ -69,7 +69,7 @@ def edit_bio(name, age, bio):
 
 
 def get_bio(id):
-    sql = "SELECT name, age, bio FROM Bios WHERE user_id = :id"
+    sql = "SELECT favourite_bird, age, bio FROM Bios WHERE user_id = :id"
     result = db.session.execute(text(sql), {"id": id})
     return result.fetchone()
 

@@ -5,12 +5,12 @@ from sqlalchemy.sql import text
 
 def get_all_sightings(user_id = None):
     if user_id is None:
-        sql = "SELECT U.username, S.bird_name, S.time, S.location, S.id, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id AND S.visibility = true ORDER BY S.time DESC"
+        sql = "SELECT S.id, U.username, S.bird_name, S.time, S.location, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id AND S.visibility = true ORDER BY S.time DESC"
         result = db.session.execute(text(sql))
     else:
-        sql = "SELECT U.username, S.bird_name, S.time, S.location, S.id, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id AND U.id = :user_id AND S.visibility = true ORDER BY S.time DESC"
+        sql = "SELECT S.id, U.username, S.bird_name, S.time, S.location, S.additional_info FROM Users U, Sightings S WHERE U.id = S.user_id AND U.id = :user_id AND S.visibility = true ORDER BY S.time DESC"
         result = db.session.execute(text(sql), {"user_id":user_id})
-    
+    print(result)
     return result.fetchall()
 
 
