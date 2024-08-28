@@ -1,9 +1,8 @@
 from app import app
-from flask import render_template, request, redirect, session
+from flask import render_template, request, redirect, session, abort
 import users, sightings, followers, comments, birds
 import base64
 from os import getenv
-
 
 
 @app.route("/", methods=["GET"])
