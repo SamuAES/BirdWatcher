@@ -9,7 +9,19 @@ from os import getenv
 @app.route("/", methods=["GET"])
 def index():
     bird_sightings = sightings.get_all_sightings()
-    return render_template("index.html", sightings = bird_sightings)
+    nof_comments = [comments.get_nof_comments(sighting.id)[0] for sighting in bird_sightings]
+    if users.user_id():
+        follows_id_list = [item.id for item in followers.get_followslist()]
+        follows_sightings = sightings.get_follows_sightings(follows_id_list)
+        if follows_sightings:
+            follows_nof_comments = [comments.get_nof_comments(sighting.id)[0] for sighting in follows_sightings]
+            return render_template("index.html", sightings = zip(bird_sightings[0:4], nof_comments[0:4]), follows_sightings = zip(follows_sightings, follows_nof_comments))
+        else:
+            return render_template("index.html", sightings = zip(bird_sightings[0:4], nof_comments[0:4]), follows_sightings = follows_sightings)
+
+    else:
+        return render_template("index.html", sightings = zip(bird_sightings[0:4], nof_comments[0:4]))
+
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -85,7 +97,8 @@ def management():
         return render_template("management.html", moderators = moderators, blacklist = blacklist)
     
     elif request.method == "POST":
-
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         # Promote username to moderator
         try:
             username = request.form["promote_username"]
@@ -137,11 +150,30 @@ def management():
 
  
 
-@app.route("/all_sightings", methods=["GET"])
+@app.route("/all_sightings", methods=["GET", "POST"])
 def all_sightings():
+    # Get list of all birdnames
+    birdnames = birds.get_bird_names()
+    # postgres returns a list of tuples so we have to parse the list to get a list of birdnames
+    birdnames = [bird[0] for bird in birdnames]
     bird_sightings = sightings.get_all_sightings()
     nof_comments = [comments.get_nof_comments(sighting.id)[0] for sighting in bird_sightings]
-    return render_template("all_sightings.html", sightings = zip(bird_sightings,nof_comments) )
+    if request.method == "GET":
+        return render_template("all_sightings.html", sightings = zip(bird_sightings,nof_comments), birdnames = birdnames)
+    
+    elif request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+
+        search_birdname = request.form["bird_name"]
+
+        # Check if a bird is selected
+        if sightings.valid_bird_name(search_birdname) is False:
+            return render_template("all_sightings.html", sightings = zip(bird_sightings,nof_comments), birdnames = birdnames, search_birdname = False)
+
+        bird_sightings = sightings.get_sightings_by_name(search_birdname)
+        nof_comments = [comments.get_nof_comments(sighting.id)[0] for sighting in bird_sightings]
+        return render_template("all_sightings.html", sightings = zip(bird_sightings,nof_comments), birdnames = birdnames, search_birdname = search_birdname)
     
         
 @app.route("/sighting/<int:id>", methods=["GET", "POST"])
@@ -160,6 +192,8 @@ def sighting_id(id):
             return render_template("sighting_details.html", id = id, sighting = sighting_details, bird_details = bird_details, comments = sighting_comments, image = image)
     
     elif request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
         # add new comment
         try:    
             sighting_id = request.form["sighting_id"]
@@ -191,7 +225,7 @@ def sighting_id(id):
 def new_sighting():
     
     birdnames = birds.get_bird_names()
-    # postgres returns a tuple for some reason so we have to parse only the first object
+    # postgres returns a list of tuples so we have to parse the list to get a list of birdnames
     birdnames = [bird[0] for bird in birdnames]
     
     if request.method == "GET":
@@ -199,7 +233,10 @@ def new_sighting():
         return render_template("new_sighting.html", birdnames = birdnames, input_data = input_data )
     
     elif request.method == "POST":
-        # Check if bird name is valid. (Must choose something.)
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
+
+        
         bird_name = request.form["bird_name"]
         time = request.form["time"]
         location = request.form["location"]
@@ -208,8 +245,9 @@ def new_sighting():
 
         input_data = [bird_name, time, location, additional_info]
 
+        # Check if bird name is valid. (Must choose something.)
         if not sightings.valid_bird_name(bird_name):
-            return render_template("new_sighting.html", birdnames = birdnames, input_data = input_data, message="Must choose a bird.")
+            return render_template("new_sighting.html", birdnames = birdnames, input_data = input_data, message="You forgot to choose the bird.")
 
         result = sightings.new_sighting(bird_name, time, location, additional_info, image)
 
@@ -234,6 +272,8 @@ def profile(username):
         return render_template("profile.html", sightings = zip(bird_sightings, nof_comments), username = username, follower = follower, bio = bio)
     
     if request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
 
         button_result = request.form["follow_btn"]
         
@@ -271,6 +311,8 @@ def own_page():
         return render_template("own_page.html", sightings = zip(bird_sightings,nof_comments), follows = followslist, followers = followerlist, bio = bio)
     
     elif request.method == "POST":
+        if session["csrf_token"] != request.form["csrf_token"]:
+            abort(403)
 
         # Follow new user
         try:

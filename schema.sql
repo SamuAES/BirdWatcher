@@ -55,4 +55,4 @@ CREATE TABLE Birds (
     breeding_range TEXT,
     breeding_range_subregions TEXT,
     nonbreeding_range TEXT
-    );
+);

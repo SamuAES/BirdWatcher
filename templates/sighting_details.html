@@ -1,9 +1,13 @@
 {% extends "layout.html" %}
 {% block content %}
-
+<style type="text/css">
+    body {
+        background-image: url(/static/images/login_image.jpg);
+        background-position: 0 120px !important;
+        }
+</style>
 {% if session.user_id %}
-
-<div class="container-fluid" style="background-image: url(/static/images/login_image.jpg)">
+<div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-8 align-self-center">
             <div class="card" style="margin: 25px;">
@@ -71,8 +75,9 @@
                         <!-- Admin, moderator or user who posted the sighting can delete it. -->
                         {% if session.username == sighting.username or session.moderator or session.admin %}
                         <form action="/sighting/{{id}}" method="post">
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                             <input type="hidden" name="sighting_id" value="{{id}}">
-                            <div style="display: flex; justify-content: end;">
+                            <div style="display: flex; justify-content: end; margin-top: 25px;">
                                 <input type="submit" class="btn btn-primary" value="Delete Sighting">
                             </div>
                         </form>
@@ -96,6 +101,7 @@
                                 <!-- Admin, moderator or user who posted the comment can delete it. -->
                                 {% if session.username == comment.username or session.moderator or session.admin %}
                                 <form action="/sighting/{{id}}" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                     <input type="hidden" name="comment_id" value="{{comment.id}}">
                                     <div style="display: flex; justify-content: end;">
                                         <input type="submit" class="btn btn-primary" value="Delete comment">
@@ -108,10 +114,11 @@
                 </div>
                 <div style="margin-top: 25px; margin-bottom: 25px;">
                     <form action="/sighting/{{id}}" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                         <input type="hidden" name="sighting_id" value="{{id}}">
                         <div class="form-group" style="margin-left: 200px; margin-right: 200px;">
                             <label for="comment"><b>Make new comment</b></label>
-                            <textarea id="comment" class="form-control" name="new_comment"  rows="3"  maxlength="500" ></textarea>
+                            <textarea id="comment" class="form-control" name="new_comment" rows="3" maxlength="500"></textarea>
                         </div>
                         <div style="display: flex; justify-content: center;">
                             <input type="submit" class="btn btn-primary" value="Comment">
@@ -124,9 +131,13 @@
 </div>
 
 {% else %}
-
-Log in to see details about the sighting!
-
+<div class="container-fluid">
+    <div class="row vh-100 justify-content-center align-items-center">
+        <a class="btn btn-primary" href="/login">
+            <h3>Log in to view sighting details</h3>
+        </a>
+    </div>
+</div>
 {% endif %}
 
 

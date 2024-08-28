@@ -3,36 +3,125 @@
 {% extends "layout.html" %}
 {% block content %}
 <script>topnav_activate('topnav_home')</script>
-
-<br>
-<div>
-    <img src="/static/images/frontpage_bird.jpg" width="400" height="550"/>
-    <br>
-    Ultimate fun! Watch birds and post your sightings!
+<style type="text/css">
+    body {
+        background-image: url(/static/images/login_image.jpg);
+        background-position: 0 120px !important;
+        background-size: contain;
+        }
+</style>
+<div class="container-fluid">
+    <div class="row"></div>
+    <div class="row justify-content-around" style="margin-top: 50px;">
+        {% if session.user_id %}
+        <div class="col-4">
+            <div class="card">
+                <h2 class="card-header">Sightings made by users you follow</h2>
+                <div class="sightings-box">
+                    {% if follows_sightings %}
+                    {% for sighting, nof_comments in follows_sightings %}
+                    <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
+                        <div class="card" style="margin: 5px;">
+                            <div class="card-header">
+                                <div class="row justify-content-between">
+                                    <div class="col">
+                                        <h6><a href="/profile/{{sighting.username}}">{{ sighting.username }}</a></h6>
+                                    </div>
+                                    <div class="col" style="text-align: end;">
+                                        <h6>{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</h6>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ sighting.bird_name }}</h5>
+                                <div class="row justify-content-between">
+                                    <div class="col">
+                                        <p class="card-text">{{ sighting.location }}</p>
+                                    </div>
+                                    <div class="col" style="text-align: end;">
+                                        <p class="card-text">Comments: {{ nof_comments }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                    {% else %}
+                    <h5 class="card-text" style="text-align: center; margin: 25px;">Start following users to see their sightings here.</h5>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %} 
+        <div class="col-4 align-self-center">
+            <div class="card">
+                <div class="card-body" style="background-color: #04AA6D;">
+                    <h3 class="card-title" style="color: white;">Welcome to BirdWatcher!</h3>
+                    <p class="card-text" style="color: white;">
+                        What is more fun than watching birds! BirdWatcher is a unique place for all you bird enthusiasts and ornithologists.
+                        In BirdWatcher you can create an account and share your bird sightings with other bird watchers.
+                        You can also start following other watchers for quick access and updates on their newest sightings.
+                        So get out to the wilds, start watching some birds and post your sightings. Ultimate fun!
+                    </p>
+                    <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
+                        <p class="card-text"><a href="/login" class="btn btn-primary" style="border-color: #fff; color: white;">Log in!</a></p>
+                    </div>
+                    <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
+                        <p class="card-text"><a href="/register" class="btn btn-primary" style="border-color: #fff; color: white;">Sign up!</a></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <!-- Recent sightings. -->
+        <div class="col-4">
+            <div class="card">
+                <h2 class="card-header">Recent bird sightings:</h2>
+                <div class="sightings-box">
+                    {% for sighting, nof_comments in sightings %}
+                        <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
+                            <div class="card" style="margin: 5px;">
+                                <div class="card-header">
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <h6><a href="/profile/{{sighting.username}}">{{ sighting.username }}</a></h6>
+                                        </div>
+                                        <div class="col" style="text-align: end;">
+                                            <h6>{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ sighting.bird_name }}</h5>
+                                    <div class="row justify-content-between">
+                                        <div class="col">
+                                            <p class="card-text">{{ sighting.location }}</p>
+                                        </div>
+                                        <div class="col" style="text-align: end;">
+                                            <p class="card-text">Comments: {{ nof_comments }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                {% if session.user_id %}
+                <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
+                    <a href="/new_sighting" class="btn btn-primary">Post new sighting!</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 </div>
-
-<h3>Recent sightings:</h3>
-
-<hr>
-{% for sighting in sightings[0:5] %}
-    <!-- Sighting info. -->
-    <h3>
-        <a href="/sighting/{{sighting.id}}"> {{ sighting.bird_name }} </a>
-    </h3>
-    <p>
-        <i>User:</i> <a href="/profile/{{sighting.username}}">{{ sighting.username }}</a>
-    </p>
-
-    <p>
-        <!-- sighting[2] is 'time' and sightings.time... cause error. -->
-        <i>Time:</i> {{ sighting[3].strftime("%Y-%m-%d %H:%M") }}
-    </p>
-    <p>
-        <i>Location:</i> {{sighting.location}}
-    </p>
-
-    <hr>
-{% endfor %}
+<style type="text/css">
+    .sightings-box {max-height: 700px; overflow-y: auto;}
+    .sightings-box-content:hover .card{background-color: #04AA6D;}
+    .sightings-box-content:hover .card-header {background-color: #03774c;} 
+    .sightings-box-content:hover .card-title {color: white;}
+    .sightings-box-content:hover .card-text {color: white;}
+</style>
 
 {% endblock %}
 

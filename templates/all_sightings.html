@@ -1,45 +1,90 @@
 {% extends "layout.html" %}
 {% block content %}
 <script>topnav_activate('topnav_all_sightings')</script>
-
-<input type="hidden" id="current_page" value="topnav_all_sightings">
-
+<style type="text/css">
+    body {
+        background-image: url(/static/images/new_bird_image.jpg);
+        background-position: 0 120px !important;
+        }
+</style>
+{% if session.user_id %}
 <!-- List all sightings. -->
-<div class="container-fluid" style="background-image: url(/static/images/birds2.jpg)">
-    <div class="row justify-content-center vh-100" style="margin-top: 25px; margin-bottom: 25px;">
+<div class="container-fluid">
+    <div class="row justify-content-center">
         <div class="col-5 align-self-center">
-            <div class="card">
-                <h5 class="card-header">All bird sightings:</h5>
+            <div class="card" style="margin-top: 20px;">
+                <div class="card-body">
+                    <h3 class="card-title" style="text-align: center;">Search for sightings by bird name</h3>
+                    <form action="/all_sightings" method="POST">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <!-- birdname selector -->
+                        <div class="wrapper" style="margin-top: 5px; margin-bottom: 10px; width: auto;">
+                            <div class="select-btn">
+                                <span>Select bird</span>
+                                <input type="hidden" id="hiddenInput" value="" name="bird_name">
+                                <i class="uil uil-angle-down"></i>
+                            </div>
+                            <div class="content">
+                                <div class="search">
+                                    <i class="uil uil-search"></i>
+                                    <input id="searchInput" spellcheck="false" type="text" placeholder="search">
+                                </div>
+                                <ul class="options"></ul>
+                            </div>
+                            <script> let birdlist = {{ birdnames|tojson }}; </script>
+                            <script src="/static/selectbird.js"></script>
+                        </div>
+                        <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
+                            <input type="submit" class="btn btn-primary" value="Search">
+                        </div>
+                    </form>
+                    {% if search_birdname == False %}
+                    <h4 class="card-text text-muted" style="text-align: center;">Choose a bird</h4>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card" style="margin-bottom: 25px; margin-top: 25px;">
+                <div class="card-header">
+                    {% if search_birdname %}
+                    <div class="row justify-content-between">
+                        <div class="col-10">
+                            <h5>Showing sightings for {{search_birdname}}</h5>
+                        </div>
+                        <div class="col justify-content-end">
+                            <a class="btn btn-primary" href="/all_sightings">Show all</a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <h5>All bird sightings</h5>
+                    {% endif %}
+                </div>
                 <div class="sightings-box">
                     {% for sighting, nof_comments in sightings %}
-                        <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
-                            <div class="card" style="margin: 5px;">
-                                <div class="card-header">
-                                    <div class="row justify-content-between">
-                                        <div class="col">
-                                            <h6><a href="/profile/{{sighting.username}}">{{ sighting.username }}</a></h6>
-                                        </div>
-                                        <div class="col" style="text-align: end;">
-                                            <h6>{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</h6>
-                                        </div>
+                    <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
+                        <div class="card" style="margin: 5px;">
+                            <div class="card-header">
+                                <div class="row justify-content-between">
+                                    <div class="col">
+                                        <h6><a href="/profile/{{sighting.username}}">{{ sighting.username }}</a></h6>
                                     </div>
-                                    
+                                    <div class="col" style="text-align: end;">
+                                        <h6>{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</h6>
+                                    </div>
                                 </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ sighting.bird_name }}</h5>
-                                    <div class="row justify-content-between">
-                                        <div class="col">
-                                            <p class="card-text">{{ sighting.location }}</p>
-                                        </div>
-                                        <div class="col" style="text-align: end;">
-                                            <p class="card-text">Comments: {{ nof_comments }}</p>
-                                        </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ sighting.bird_name }}</h5>
+                                <div class="row justify-content-between">
+                                    <div class="col">
+                                        <p class="card-text">{{ sighting.location }}</p>
                                     </div>
-                                    
-                                    
+                                    <div class="col" style="text-align: end;">
+                                        <p class="card-text">Comments: {{ nof_comments }}</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     {% endfor %}
                 </div>
                 {% if session.user_id %}
@@ -58,6 +103,13 @@
     .sightings-box-content:hover .card-title {color: white;}
     .sightings-box-content:hover .card-text {color: white;}
 </style>
-
-
+{% else %}
+<div class="container-fluid">
+    <div class="row vh-100 justify-content-center align-items-center">
+        <a class="btn btn-primary" href="/login">
+            <h3>Log in see all sightings</h3>
+        </a>
+    </div>
+</div>
+{% endif %}
 {% endblock %}

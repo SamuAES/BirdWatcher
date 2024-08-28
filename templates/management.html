@@ -1,9 +1,8 @@
 {% extends "layout.html" %}
 {% block content %}
 <script>topnav_activate('topnav_management')</script>
-
 <div class="container-fluid">
-    <div class="row vh-100 justify-content-around">
+    <div class="row justify-content-around">
         <div class="col">
             <!-- Only admin can promote and demote moderators. -->
             {% if session.admin %}
@@ -11,6 +10,7 @@
                 <h5 class="card-header">Moderators</h5>
                 <div class="card-body">
                     <form action="/management" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                         <div class="form-group"> 
                             <label for="promote_username"><b>Make user moderator</b></label>
                             <input type="text" id="promote_username" class="form-control" name="promote_username" placeholder="Username" minlength="1" maxlength="20" required>
@@ -26,7 +26,7 @@
                     </form>
                 </div>
                 <!-- List of moderators -->
-                <div class="card-body">
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
                     <h4 class="card-title" style="text-align: center;">List of moderators</h4>
                     {% for moderator in moderators %}
                     <div class="row justify-content-around" style="margin: 20px;">
@@ -35,7 +35,8 @@
                         </div>
                         <div class="col" style="text-align: end;">
                             <form action="/management" method="post">
-                                <input type="hidden" name="demote_username" value="{{moderator.username}}">
+                                <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                                <input type="hidden" name="demote_username" value="{{moderator.id}}">
                                 <input type="submit" class="btn btn-danger" value="Demote">
                             </form>
                         </div>
@@ -49,6 +50,7 @@
                 <h5 class="card-header">Blacklist</h5>
                 <div class="card-body">
                     <form action="/management" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                         <div class="form-group"> 
                             <label for="reason"><b>Ban user</b></label>
                             <input type="text"  class="form-control" name="ban_username" minlength="1" maxlength="20" placeholder="Username" required>
@@ -82,6 +84,7 @@
                             <p class="card-text">{{user.reason}}</p>
                             <div style="display: flex; justify-content: center;">
                                 <form action="/management" method="post">
+                                    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                                     <input type="hidden" name="unban_username" value="{{user.username}}">
                                     <input type="submit" class="btn btn-danger" value="Unban">
                                 </form>
@@ -93,7 +96,7 @@
             </div>
         </div>
         <div class="col" style="margin-top: 25px;">
-            <img src="/static/images/frontpage_bird.jpg" class="img-fluid" >
+            <img src="/static/images/frontpage_bird.jpg" class="img-fluid" style="border-radius: 400px;" >
             <h2 style="text-align: center;">I'm watching you!</h2>
         </div>
     </div>

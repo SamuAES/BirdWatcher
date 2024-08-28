@@ -3,6 +3,7 @@ from flask import session
 from werkzeug.security import check_password_hash, generate_password_hash
 from sqlalchemy.sql import text
 from os import getenv
+from secrets import token_hex
 
 def login(username, password):
     sql = "SELECT id, password, moderator FROM Users WHERE username=:username"
@@ -14,6 +15,7 @@ def login(username, password):
         if check_password_hash(user.password, password):
             session["user_id"] = user.id
             session["username"] = username
+            session["csrf_token"] = token_hex(16)
             if user.moderator is True:
                 session["moderator"] = True
 
@@ -28,6 +30,7 @@ def login(username, password):
 def logout():
     del session["user_id"]
     del session["username"]
+    del session["csrf_token"]
     try:
         del session["moderator"]
     except:

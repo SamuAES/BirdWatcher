@@ -1,10 +1,17 @@
 {% extends "layout.html" %}
 {% block content %}
 <script>topnav_activate('topnav_register')</script>
+<style type="text/css">
+    body {
+        background-image: url(/static/images/register_image.jpg);
+        background-position: 0 120px !important;
+        }
+</style>
 
-<div class="container-fluid" style="background-image: url(/static/images/register_image.jpg);">
-    <div class="row vh-100 justify-content-center">
-        <div class="col-4 align-self-center">
+
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="col-4">
             <div class="card" style="margin-top: 25px; margin-bottom: 25px;">
                 <div class="card-body">
                     <h2>Create a new account!</h2>

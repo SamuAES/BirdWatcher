@@ -1,38 +1,46 @@
 {% extends "layout.html" %}
 {% block content %}
-
-
+<style type="text/css">
+    body {
+        background-image: url(/static/images/birds2.jpg);
+        background-position: 0 120px !important;
+        }
+</style>
 {% if session.user_id %}
-<div class="container-fluid" style="background-image: url(/static/images/birds2.jpg)">
-    <div class="row justify-content-around vh-100" style="margin-top: 25px; margin-bottom: 25px;">
+<div class="container-fluid">
+    <div class="row justify-content-around vh-100" style="margin-top: 25px;">
         <!-- Usernames sightings sightings -->
         <div class="col-4">
             <div class="card">
                 <h5 class="card-header">{{username}} bird sightings</h5>
                 <div class="sightings-box">
                     {% for sighting, nof_comments in sightings %}
-                        <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
-                            <div class="card" style="margin: 5px;">
-                                <div class="card-body">
-                                    <div class="row justify-content-between">
-                                        <div class="col">
-                                            <h5 class="card-title">{{ sighting.bird_name }}</h5>
-                                        </div>
-                                        <div class="col" style="text-align: end;">
-                                            <p class="card-text">{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</p>
-                                        </div>
+                    {% if sighting %}
+                    <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
+                        <div class="card" style="margin: 5px;">
+                            <div class="card-body">
+                                <div class="row justify-content-between">
+                                    <div class="col">
+                                        <h5 class="card-title">{{ sighting.bird_name }}</h5>
                                     </div>
-                                    <div class="row justify-content-between">
-                                        <div class="col">
-                                            <p class="card-text">{{ sighting.location }}</p>
-                                        </div>
-                                        <div class="col" style="text-align: end;">
-                                            <p class="card-text">Comments: {{ nof_comments }}</p>
-                                        </div>
+                                    <div class="col" style="text-align: end;">
+                                        <p class="card-text">{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</p>
+                                    </div>
+                                </div>
+                                <div class="row justify-content-between">
+                                    <div class="col">
+                                        <p class="card-text">{{ sighting.location }}</p>
+                                    </div>
+                                    <div class="col" style="text-align: end;">
+                                        <p class="card-text">Comments: {{ nof_comments }}</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    {% else %}
+                        <h5 class="card-text" style="text-align: center; margin: 25px;">{{username}} has no sightings.</h5>
+                    {% endif %}
                     {% endfor %}
                 </div>
             </div>
@@ -52,13 +60,15 @@
                 <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                     {% if follower %}
                     <form action="/profile/{{username}}" method="POST">
-                            <input type="hidden" name="follow_btn" value="unfollow">
-                            <input type="submit" class="btn btn-primary" value="Unfollow {{username}}">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <input type="hidden" name="follow_btn" value="unfollow">
+                        <input type="submit" class="btn btn-primary" value="Unfollow {{username}}">
                     </form>
                     {% else %}
                         <form action="/profile/{{username}}" method="POST">
-                                <input type="hidden" name="follow_btn" value="follow">
-                                <input type="submit" class="btn btn-primary" value="Follow {{username}}">
+                            <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                            <input type="hidden" name="follow_btn" value="follow">
+                            <input type="submit" class="btn btn-primary" value="Follow {{username}}">
                         </form>
                     {% endif %}
                 </div>
@@ -75,9 +85,13 @@
 </style>
 
 {% else %}
-
-<p>Log in to view other people sightings!</p>
-
+<div class="container-fluid">
+    <div class="row vh-100 justify-content-center align-items-center">
+        <a class="btn btn-primary" href="/login">
+            <h3>Log in to view profiles</h3>
+        </a>
+    </div>
+</div>
 {% endif %}
 
 

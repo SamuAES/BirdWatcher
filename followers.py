@@ -37,13 +37,13 @@ def stop_follow(username):
 
 def get_followslist():
     user = user_id()
-    sql = "SELECT U.username FROM Users U, Followers F WHERE F.user_id = :user_id AND F.follow_id = U.id"
+    sql = "SELECT U.id, U.username FROM Users U, Followers F WHERE F.user_id = :user_id AND F.follow_id = U.id"
     result = db.session.execute(text(sql), {"user_id": user})
     return result.fetchall()
 
 def get_followerlist():
     user = user_id()
-    sql = "SELECT U.username FROM Users U, Followers F WHERE F.follow_id = :user_id AND F.user_id = U.id"
+    sql = "SELECT U.id, U.username FROM Users U, Followers F WHERE F.follow_id = :user_id AND F.user_id = U.id"
     result = db.session.execute(text(sql), {"user_id": user})
     return result.fetchall()
 

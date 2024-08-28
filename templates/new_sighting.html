@@ -1,13 +1,21 @@
 {% extends "layout.html" %}
 {% block content %}
 <script>topnav_activate('topnav_new_sighting')</script>
-<div class="container-fluid" style="background-image: url(/static/images/new_bird_image.jpg)">
-    <div class="row vh-100 justify-content-center">
+<style type="text/css">
+    body {
+        background-image: url(/static/images/new_bird_image.jpg);
+        background-position: 0 120px !important;
+        }
+</style>
+{% if session.user_id %}
+<div class="container-fluid">
+    <div class="row justify-content-center" style="margin-top: 25px;">
         <div class="col-6 align-self-center">
             <div class="card">
                 <div class="card-body">
                     <h2 style="text-align: center;">Post new sighting</h2>
                     <form action="/new_sighting" method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                         <!-- birdname selector -->
                         <div class="wrapper">
                             <div class="select-btn">
@@ -84,7 +92,14 @@
         </div>
     </div>
 </div>
-
-
+{% else %}
+<div class="container-fluid">
+    <div class="row vh-100 justify-content-center align-items-center">
+        <a class="btn btn-primary" href="/login">
+            <h3>Log in to post a sighting</h3>
+        </a>
+    </div>
+</div>
+{% endif %}
 {% endblock %}
 

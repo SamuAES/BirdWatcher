@@ -4,21 +4,26 @@ body{
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-
 /* Customize bootstrap card */
+.card,.card-body{
+  border-radius: 15px;
+}
 .card{
   margin-top: 5px;
   margin-bottom: 5px;
 }
-.card-header {
+.card-header{
   background-color: #04AA6D;
-  border-radius: 3px;
   color: white;
+}
+.card-header:first-child{
+  border-top-left-radius: 15px;
+  border-top-right-radius: 15px;
 }
 .card-header a{
   color: white;
 }
-.card-title a{
+.card-title a, .card-body a{
   color: #333;
 }
 
@@ -107,6 +112,7 @@ body{
   color: white;
 }
 
+/* Customize selected area */
 ::selection{
   color: #fff;
   background: #04AA6D;
