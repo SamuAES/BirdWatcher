@@ -86,7 +86,7 @@ def management():
         try:
             session["admin"]
         except:
-            return redirect("/")
+            return abort(403)
 
     moderators = users.get_moderators()
     blacklist = users.get_blacklist()
