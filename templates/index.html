@@ -12,14 +12,14 @@
 </style>
 <div class="container-fluid">
     <div class="row"></div>
-    <div class="row justify-content-around" style="margin-top: 50px;">
+    <div class="row justify-content-around" style="margin-top: 25px;">
         {% if session.user_id %}
         <div class="col-4">
             <div class="card">
                 <h2 class="card-header">Sightings made by users you follow</h2>
                 <div class="sightings-box">
                     {% if follows_sightings %}
-                    {% for sighting, nof_comments in follows_sightings %}
+                    {% for sighting in follows_sightings %}
                     <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
                         <div class="card" style="margin: 5px;">
                             <div class="card-header">
@@ -39,7 +39,13 @@
                                         <p class="card-text">{{ sighting.location }}</p>
                                     </div>
                                     <div class="col" style="text-align: end;">
-                                        <p class="card-text">Comments: {{ nof_comments }}</p>
+                                        <p class="card-text">
+                                            {% if nof_comments[sighting.id] %}
+                                            Comments: {{ nof_comments[sighting.id] }}
+                                            {% else %}
+                                            Comments: 0
+                                            {% endif %}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -78,33 +84,43 @@
             <div class="card">
                 <h2 class="card-header">Recent bird sightings:</h2>
                 <div class="sightings-box">
-                    {% for sighting, nof_comments in sightings %}
-                        <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
-                            <div class="card" style="margin: 5px;">
-                                <div class="card-header">
-                                    <div class="row justify-content-between">
-                                        <div class="col">
-                                            <h6><a href="/profile/{{sighting.username}}">{{ sighting.username }}</a></h6>
-                                        </div>
-                                        <div class="col" style="text-align: end;">
-                                            <h6>{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</h6>
-                                        </div>
+                    {% if sightings %}
+                    {% for sighting in sightings %}
+                    <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
+                        <div class="card" style="margin: 5px;">
+                            <div class="card-header">
+                                <div class="row justify-content-between">
+                                    <div class="col">
+                                        <h6><a href="/profile/{{sighting.username}}">{{ sighting.username }}</a></h6>
+                                    </div>
+                                    <div class="col" style="text-align: end;">
+                                        <h6>{{ sighting[3].strftime("%Y-%m-%d %H:%M") }}</h6>
                                     </div>
                                 </div>
-                                <div class="card-body">
-                                    <h5 class="card-title">{{ sighting.bird_name }}</h5>
-                                    <div class="row justify-content-between">
-                                        <div class="col">
-                                            <p class="card-text">{{ sighting.location }}</p>
-                                        </div>
-                                        <div class="col" style="text-align: end;">
-                                            <p class="card-text">Comments: {{ nof_comments }}</p>
-                                        </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">{{ sighting.bird_name }}</h5>
+                                <div class="row justify-content-between">
+                                    <div class="col">
+                                        <p class="card-text">{{ sighting.location }}</p>
+                                    </div>
+                                    <div class="col" style="text-align: end;">
+                                        <p class="card-text">
+                                            {% if nof_comments[sighting.id] %}
+                                            Comments: {{ nof_comments[sighting.id] }}
+                                            {% else %}
+                                            Comments: 0
+                                            {% endif %}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
+                    </div>
                     {% endfor %}
+                    {% else %}
+                    <h5 class="card-text" style="text-align: center; margin: 25px;">No sightings yet.</h5>
+                    {% endif %}
                 </div>
                 {% if session.user_id %}
                 <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">

@@ -9,13 +9,13 @@
 {% if session.user_id %}
 <div class="container-fluid">
     <div class="row justify-content-around vh-100" style="margin-top: 25px;">
-        <!-- Usernames sightings sightings -->
+        <!-- Usernames sightings -->
         <div class="col-4">
             <div class="card">
                 <h5 class="card-header">{{username}} bird sightings</h5>
                 <div class="sightings-box">
-                    {% for sighting, nof_comments in sightings %}
-                    {% if sighting %}
+                    {% if sightings %}
+                    {% for sighting in sightings %}
                     <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
                         <div class="card" style="margin: 5px;">
                             <div class="card-body">
@@ -32,16 +32,22 @@
                                         <p class="card-text">{{ sighting.location }}</p>
                                     </div>
                                     <div class="col" style="text-align: end;">
-                                        <p class="card-text">Comments: {{ nof_comments }}</p>
+                                        <p class="card-text">
+                                            {% if nof_comments[sighting.id] %}
+                                            Comments: {{ nof_comments[sighting.id] }}
+                                            {% else %}
+                                            Comments: 0
+                                            {% endif %}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    {% else %}
-                        <h5 class="card-text" style="text-align: center; margin: 25px;">{{username}} has no sightings.</h5>
-                    {% endif %}
                     {% endfor %}
+                    {% else %}
+                    <h5 class="card-text" style="text-align: center; margin: 25px;">{{username}} has no sightings.</h5>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -51,11 +57,11 @@
                 <h5 class="card-header">{{username}} profile</h5>
                 <div class="card-body">
                     <label for="favourite_bird1"><b>Favourite bird:</b></label>
-                    <p class="card-text" id="favourite_bird1">{{bio.favourite_bird}}</p>
+                    <p class="card-text" id="favourite_bird1">{{profile.favourite_bird}}</p>
                     <label for="age1"><b>Age:</b></label>
-                    <p class="card-text" id="age1">{{bio.age}}</p>
+                    <p class="card-text" id="age1">{{profile.age}}</p>
                     <label for="bio1"><b>Bio:</b></label>
-                    <p class="card-text" id="bio1">{{bio.bio}}</p>
+                    <p class="card-text" id="bio1">{{profile.bio}}</p>
                 </div>
                 <div style="display: flex; justify-content: center; margin-bottom: 20px;">
                     {% if follower %}

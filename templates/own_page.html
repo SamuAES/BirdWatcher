@@ -15,7 +15,7 @@
             <div class="card overflow-auto">
                 <h5 class="card-header">Your own sightings</h5>
                 <div class="sightings-box">    
-                    {% for sighting, nof_comments in sightings %}
+                    {% for sighting in sightings %}
                     <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
                         <div class="card" style="margin: 5px;">
                             <div class="card-body">
@@ -32,7 +32,13 @@
                                         <p class="card-text">{{ sighting.location }}</p>
                                     </div>
                                     <div class="col" style="text-align: end;">
-                                        <p class="card-text">Comments: {{ nof_comments }}</p>
+                                        <p class="card-text">
+                                            {% if nof_comments[sighting.id] %}
+                                            Comments: {{ nof_comments[sighting.id] }}
+                                            {% else %}
+                                            Comments: 0
+                                            {% endif %}
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -51,14 +57,15 @@
                 <h5 class="card-header">Your profile</h5>
                 <div class="card-body">
                     <label for="favourite_bird1"><b>Favourite bird:</b></label>
-                    <p class="card-text" id="favourite_bird1">{{bio.favourite_bird}}</p>
+                    <p class="card-text" id="favourite_bird1">{{profile.favourite_bird}}</p>
                     <label for="age1"><b>Age:</b></label>
-                    <p class="card-text" id="age1">{{bio.age}}</p>
+                    <p class="card-text" id="age1">{{profile.age}}</p>
                     <label for="bio1"><b>Bio:</b></label>
-                    <p class="card-text" id="bio1">{{bio.bio}}</p>
+                    <p class="card-text" id="bio1">{{profile.bio}}</p>
                 </div>
-                <div style="display: flex; justify-content: center; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-around; margin-bottom: 20px;">
                     <button class="btn btn-primary" onclick="edit_profile_btn('profile_card', 'edit_profile_card')">Edit your profile</button>
+                    <button class="btn btn-primary" onclick="edit_profile_btn('profile_card', 'change_password_card')">Change password</button>
                 </div>
             </div>
             <!-- Edit profile -->
@@ -69,34 +76,57 @@
                         <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
                         <div class="form-group"> 
                             <label for="favourite_bird2"><b>Favourite bird:</b></label>
-                            <input type="text" id="favourite_bird2" class="form-control" name="favourite_bird" minlength="2" maxlength="40" value="{{bio.favourite_bird}}">
+                            <input type="text" id="favourite_bird2" class="form-control" name="favourite_bird" minlength="2" maxlength="40" value="{{profile.favourite_bird}}">
                         </div>
                         <div class="form-group">
                             <label for="age2"><b>Age:</b></label>
-                            <input type="number" id="age2" class="form-control" name="age" min="1" max="120" value="{{bio.age}}">
+                            <input type="number" id="age2" class="form-control" name="age" min="1" max="120" value="{{profile.age}}">
                         </div>
                         <div class="form-group">
                             <label for="bio2"><b>Bio:</b></label>
-                            <textarea id="bio2" class="form-control" name="bio"  rows="3"  maxlength="500" aria-describedby="bioHelp">{{bio.bio}}</textarea>
+                            <textarea id="bio2" class="form-control" name="bio"  rows="3"  maxlength="500" aria-describedby="bioHelp">{{profile.bio}}</textarea>
                             <small id="bioHelp" class="form-text text-muted">Tell something about yourself.</small>
                         </div>
-                        <div style="display: flex; justify-content: center;">
-                            <input type="submit" class="btn btn-primary" onclick="edit_profile_btn('profile_card', 'edit_profile_card')" value="Update">
+                        <div class="alert alert-light" style="display: flex; justify-content: center;" role="alert">
+                            <b>{{message_profile}}</b>
+                        </div>
+                        <div style="display: flex; justify-content: space-around;">
+                            <button class="btn btn-primary" onclick="edit_profile_btn('profile_card', 'edit_profile_card')">Cancel</button>
+                            <input type="submit" class="btn btn-primary" value="Update">
                         </div>
                     </form>
                 </div>    
             </div>
-            <!-- Users followers -->
-            <div class="card" >
-                <h5 class="card-header">Your followers</h5>
-                <div class="card-body" style="max-height: 200px; overflow-y: auto;">
-                    {% for item in followers %}
-                    <p class="card-text"><a href="/profile/{{item.username}}">{{item.username}}</a></p> 
-                    {% endfor %}
-                </div>
+            <!-- Change password -->
+            <div class="card" id="change_password_card" style="display: none;">
+                <h5 class="card-header">Your profile</h5>
+                <div class="card-body">
+                    <form action="/own_page" method="post">
+                        <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+                        <div class="form-group"> 
+                            <label for="old_password"><b>Old password</b></label>
+                            <input type="password" id="old_password" class="form-control" name="old_password" minlength="1" maxlength="40" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password1"><b>New password</b></label>
+                            <input type="password" id="password1" class="form-control" name="password1" minlength="1" maxlength="20" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password2"><b>New password again</b></label>
+                            <input type="password" id="password2" class="form-control" name="password2"  minlength="1"  maxlength="20" required>
+                        </div>
+                        <div class="alert alert-light" style="display: flex; justify-content: center;" role="alert">
+                            <b>{{message_password}}</b>
+                        </div>
+                        <div style="display: flex; justify-content: space-around;">
+                            <button class="btn btn-primary" onclick="edit_profile_btn('profile_card', 'change_password_card')">Cancel</button>
+                            <input type="submit" class="btn btn-primary" value="Change password">
+                        </div>
+                    </form>
+                </div>    
             </div>
             <!-- Users own follows -->
-            <div class="card" style="margin-bottom: 20px;">
+            <div class="card">
                 <h5 class="card-header">You are following</h5>
                 <div class="card-body" style="max-height: 200px; overflow-y: auto;">
                     {% for item in follows %}
@@ -111,12 +141,21 @@
                             <input type="text" id="start_follow" class="form-control" name="follow_username" minlength="1" maxlength="30">
                         </div>
                         <div class="alert alert-light" style="display: flex; justify-content: center;" role="alert">
-                            <b>{{message}}</b>
+                            <b>{{message_follow}}</b>
                         </div>
                         <div style="display: flex; justify-content: center;">
                             <input type="submit" class="btn btn-primary" value="Follow">
                         </div>
                     </form>
+                </div>
+            </div>
+            <!-- Users followers -->
+            <div class="card" >
+                <h5 class="card-header">Your followers</h5>
+                <div class="card-body" style="max-height: 200px; overflow-y: auto;">
+                    {% for item in followers %}
+                    <p class="card-text"><a href="/profile/{{item.username}}">{{item.username}}</a></p> 
+                    {% endfor %}
                 </div>
             </div>
         </div>
@@ -129,6 +168,12 @@
     .sightings-box-content:hover .card-title {color: white;}
     .sightings-box-content:hover .card-text {color: white;}
 </style>
+{% if message_password %}
+<script>edit_profile_btn('profile_card', 'change_password_card');</script>
+{% endif %}
+{% if message_profile %}
+<script>edit_profile_btn('profile_card', 'edit_profile_card');</script>
+{% endif %}
 {% else %}
 <div class="container-fluid">
     <div class="row vh-100 justify-content-center align-items-center">

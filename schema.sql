@@ -4,7 +4,7 @@ CREATE TABLE Users (
     password TEXT,
     moderator BOOLEAN
 );
-CREATE TABLE Bios (
+CREATE TABLE Profiles (
     user_id INTEGER PRIMARY KEY REFERENCES Users,
     favourite_bird TEXT,
     age TEXT,

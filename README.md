@@ -17,6 +17,7 @@ BirdWatcher is a web application based on Python Flask library and PostgresSQL d
 
 ● Follow users so you can see easily what birds they have spotted recently!
 
+● Admin user can promote other users to moderators. Admin and moderators can ban other users and delete sightings and comments made by other users. All users can delete their own sightings and comments.
 
 # How to test the program
 

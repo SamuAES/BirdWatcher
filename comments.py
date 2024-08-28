@@ -10,14 +10,21 @@ def add_comment(sighting_id, content):
     db.session.commit()
 
 def get_comments(sighting_id):
-    sql = "SELECT U.username, C.content, C.sent_at, C.id FROM Comments C, Users U WHERE C.sighting_id = :id AND C.user_id = U.id AND C.visibility = true"
+    sql = """SELECT U.username, C.content, C.sent_at, C.id FROM Comments C, Users U WHERE 
+            C.sighting_id = :id AND C.user_id = U.id AND C.visibility = true"""
     result = db.session.execute(text(sql), {"id": sighting_id})
     return result.fetchall()
 
-def get_nof_comments(sighting_id):
-    sql = "SELECT COUNT(*) FROM Comments WHERE sighting_id = :sighting_id"
-    result = db.session.execute(text(sql), {"sighting_id":sighting_id})
-    return result.fetchone()
+
+def get_nof_comments():
+    sql = "SELECT sighting_id, COUNT(*) FROM Comments GROUP BY sighting_id"
+    result = db.session.execute(text(sql))
+    result = result.fetchall()
+    comments_dict = {}
+    for item in result:
+        comments_dict[item[0]] = item[1]
+    return comments_dict
+
 
 def delete_comment(comment_id):
     sql = "UPDATE Comments SET visibility = false WHERE id = :id"

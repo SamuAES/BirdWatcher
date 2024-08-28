@@ -31,7 +31,7 @@
                                 </div>
                                 <ul class="options"></ul>
                             </div>
-                            <script> let birdlist = {{ birdnames|tojson }}; </script>
+                            <script> let birdlist = {{birdnames|tojson}}; </script>
                             <script src="/static/selectbird.js"></script>
                         </div>
                         <div style="display: flex; justify-content: center; margin-top: 20px; margin-bottom: 20px;">
@@ -59,7 +59,7 @@
                     {% endif %}
                 </div>
                 <div class="sightings-box">
-                    {% for sighting, nof_comments in sightings %}
+                    {% for sighting in sightings %}
                     <div class="sightings-box-content" onclick="location.href='/sighting/{{sighting.id}}'">
                         <div class="card" style="margin: 5px;">
                             <div class="card-header">
@@ -79,7 +79,13 @@
                                         <p class="card-text">{{ sighting.location }}</p>
                                     </div>
                                     <div class="col" style="text-align: end;">
-                                        <p class="card-text">Comments: {{ nof_comments }}</p>
+                                        <p class="card-text">
+                                            {% if nof_comments[sighting.id] %}
+                                            Comments: {{ nof_comments[sighting.id] }}
+                                            {% else %}
+                                            Comments: 0
+                                            {% endif %}
+                                        </p>
                                     </div>
                                 </div>
                             </div>

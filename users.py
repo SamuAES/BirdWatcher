@@ -16,16 +16,27 @@ def login(username, password):
             session["user_id"] = user.id
             session["username"] = username
             session["csrf_token"] = token_hex(16)
-            if user.moderator is True:
+            if user.moderator:
                 session["moderator"] = True
-
             if username == getenv("admin"):
                 session["admin"] = True
-
             return True
-        
         else:
             return False
+
+def change_password(old, new):
+    id = user_id()
+    sql = "SELECT password FROM Users WHERE id = :id"
+    result = db.session.execute(text(sql), {"id": id})
+    user = result.fetchone()
+    if check_password_hash(user.password, old):
+        new_hash = generate_password_hash(new)
+        sql = "UPDATE Users SET password = :new_password WHERE id = :id"
+        db.session.execute(text(sql), {"id": id, "new_password": new_hash})
+        db.session.commit()
+        return True
+    else:
+        return False
 
 def logout():
     del session["user_id"]
@@ -50,20 +61,20 @@ def register(username, password):
         return False
     return login(username, password)
 
-def add_bio(favourite_bird, age, bio):
+def add_profile(favourite_bird, age, bio):
     try:
         id = user_id()
-        sql = "INSERT INTO Bios (user_id, favourite_bird, age, bio) VALUES (:id, :favourite_bird, :age, :bio)"
+        sql = "INSERT INTO Profiles (user_id, favourite_bird, age, bio) VALUES (:id, :favourite_bird, :age, :bio)"
         db.session.execute(text(sql), {"id":id, "favourite_bird":favourite_bird, "age":age, "bio":bio})
         db.session.commit()
         return True
     except:
         return False
 
-def edit_bio(favourite_bird, age, bio):
+def edit_profile(favourite_bird, age, bio):
     try:
         id = user_id()
-        sql = "UPDATE Bios SET favourite_bird = :favourite_bird, age = :age, bio = :bio WHERE user_id = :id"
+        sql = "UPDATE Profiles SET favourite_bird = :favourite_bird, age = :age, bio = :bio WHERE user_id = :id"
         db.session.execute(text(sql), {"id":id, "favourite_bird":favourite_bird, "age":age, "bio":bio})
         db.session.commit()
         return True
@@ -71,8 +82,8 @@ def edit_bio(favourite_bird, age, bio):
         return False
 
 
-def get_bio(id):
-    sql = "SELECT favourite_bird, age, bio FROM Bios WHERE user_id = :id"
+def get_profile(id):
+    sql = "SELECT favourite_bird, age, bio FROM Profiles WHERE user_id = :id"
     result = db.session.execute(text(sql), {"id": id})
     return result.fetchone()
 
@@ -87,7 +98,7 @@ def get_id_by_username(username):
     sql = "SELECT id FROM Users WHERE username = :username"
     result = db.session.execute(text(sql), {"username":username})
     id_number = result.fetchone()
-    if id_number is None:
+    if not id_number:
         return False
     return id_number[0]
 
@@ -108,9 +119,9 @@ def promote_moderator(username):
     result = db.session.execute(text(sql), {"username":username})
     user = result.fetchone()
 
-    if user is None:
+    if not user:
         return "No user with that name."
-    if user[1] == True:
+    if user[1]:
         return "That user is already a moderator."
 
     try:
@@ -132,7 +143,6 @@ def demote_moderator(user_id):
 
 
 
-    
 def get_blacklist():
     sql = "SELECT U.username, B.reason, B.date FROM Users U, Blacklist B WHERE B.user_id = U.id"
     result = db.session.execute(text(sql))
@@ -140,7 +150,7 @@ def get_blacklist():
 
 def check_blacklist(username):
     id = get_id_by_username(username)
-    if id is False:
+    if not id:
         return False
     sql = "SELECT user_id FROM Blacklist WHERE user_id = :id"
     result = db.session.execute(text(sql), {"id": id})
