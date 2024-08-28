@@ -1,7 +1,7 @@
 # BirdWatcher
 Share and comment on your bird sightings with other bird watchers!
 
-BirdWatcher is a web application where you can:
+BirdWatcher is a web application based on Python Flask library and PostgresSQL database where you can:
 
 ● Create and log in to your account.
 
@@ -9,49 +9,42 @@ BirdWatcher is a web application where you can:
 
 ● Add additional information about the sighting for example the weather conditions and the events that lead to the observation.
 
+● Add image about your bird sighting.
+
 ● See what birds other people have seen.
 
-● Reply to comments about your sightings and comment on other peoples bird sightings.
+● Comment on other peoples bird sightings and reply to comments about your sightings.
 
 ● Follow users so you can see easily what birds they have spotted recently!
 
-# Current stage of development
-
-● Currently you can create an account and log in.
-
-● You can add new bird sightings and see what sightings other people have posted.
-
-● You can add comments to other users sightings and you can add other people to your friend list.
-
-● You can follow other users and you can see who is following you.
-
-# Still in progress
-
-● Add database for birds so users can get additional information about birds if they click on bird name.
-
-● Add funtionality that users can search for bird sightings by username or birdname.
-
-● Customize the layout and interface of the pages.
 
 # How to test the program
 
-● Create a database according to schema.sql
+● Clone the repository.
 
-● Load birdlist into your created database from static folder.
+● Create a PostgreSQL database according to schema.sql.
 
-    COPY Birds FROM '...\your_own_path\static\birdlist.csv' DELIMITER '|' CSV HEADER;
+● Import birdlist.csv into your created database from static folder.
+
+    You can copy csv file with following command prompt:
+
+    COPY Birds FROM '...your_own_path\static\birdlist.csv' DELIMITER '|' CSV HEADER;
 
     Notice the delimiter is |.
 
-    If you are using windows try:
+    If you are using windows command prompt try:
 
-    \copy Birds FROM '.../your_own_path/static/birdlist.csv' DELIMITER '|' CSV HEADER;
+    \copy Birds FROM '...your_own_path/static/birdlist.csv' DELIMITER '|' CSV HEADER;
 
-● Create .env file and store there:
+    You can also import csv file into database using pgAdmin client.
+
+● Create .env file to repository root and store there:
 
     DATABASE_URL = postgresql://username:password@host:port/dtabase_name
     SECRET_KEY = 'your secret key'
-    admin = 'username'  (This username will have admin rights.)
+    admin = 'username'  #(This username will have admin rights.)
+
+● Create virtual environment
 
 ● Install python dependencies from requirements.txt
 
