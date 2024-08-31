@@ -17,7 +17,7 @@ def get_comments(sighting_id):
 
 
 def get_nof_comments():
-    sql = "SELECT sighting_id, COUNT(*) FROM Comments GROUP BY sighting_id"
+    sql = "SELECT sighting_id, COUNT(*) FROM Comments WHERE visibility = true GROUP BY sighting_id"
     result = db.session.execute(text(sql))
     result = result.fetchall()
     comments_dict = {}

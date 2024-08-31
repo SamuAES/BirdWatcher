@@ -196,14 +196,14 @@ def sighting_id(id):
             return redirect(f"/sighting/{id}")
         except:
             pass
-        #delete comment
+        # delete comment
         try:
             comment_id = request.form["comment_id"]
             comments.delete_comment(comment_id)
             return redirect(f"/sighting/{id}")
         except:
             pass
-        #delete sighting
+        # delete sighting
         try:
             sighting_id = request.form["sighting_id"]
             sightings.delete_sighting(sighting_id)
@@ -254,7 +254,10 @@ def profile(username):
     if username == users.get_username():
         return redirect("/own_page")
 
-    bird_sightings = sightings.get_all_sightings(users.get_id_by_username(username))
+    user_id = users.get_id_by_username(username)
+    if not user_id:
+        return redirect("/")
+    bird_sightings = sightings.get_all_sightings()
     nof_comments = comments.get_nof_comments()
     follower = followers.is_following(username)
     profile = users.get_profile(users.get_id_by_username(username))
@@ -278,14 +281,24 @@ def profile(username):
             
             if result:
                 return redirect("/profile/"+username)
-            return render_template("profile.html", sightings=bird_sightings, nof_comments=nof_comments, username=username, profile=profile, follower=follower, message="Something went wrong. Please contact support.")
+            return render_template("profile.html",
+                                   sightings=bird_sightings,
+                                   nof_comments=nof_comments,
+                                   username=username, profile=profile,
+                                   follower=follower, message="Something went wrong. Please contact support.")
         
         # If user wants to follow
         result = followers.add_follow(username)
 
         if result:
             return redirect("/profile/"+username)
-        return render_template("profile.html", sightings=bird_sightings, nof_comments=nof_comments, username=username, profile=profile, follower=follower, message="Something went wrong. Please contact support.")
+        return render_template("profile.html",
+                               sightings=bird_sightings,
+                               nof_comments=nof_comments,
+                               username=username,
+                               profile=profile,
+                               follower=follower,
+                               message="Something went wrong. Please contact support.")
 
 
 
@@ -337,6 +350,7 @@ def own_page():
                                                         profile=profile,
                                                         message_password="New passwords are not the same."
                                                         )
+            
             if users.change_password(old_password, password1):
                                 return redirect("/own_page")
             else:

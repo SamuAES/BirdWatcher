@@ -67,7 +67,7 @@ def new_sighting(bird_name, time, location, additional_info, image):
     data = image.read()
     
     if len(data) > 100*1024:
-        return "Image type must be jpg or png and size below 100kb"
+        return "Image type must be jpg or png and size below 100kB"
     
     sql = """INSERT INTO Sightings (user_id, bird_name, time, location, additional_info, visibility ) 
             VALUES (:user_id, :bird_name, :time, :location, :additional_info, true)"""

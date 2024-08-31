@@ -16,9 +16,11 @@
                             <input type="text" id="promote_username" class="form-control" name="promote_username" placeholder="Username" minlength="1" maxlength="20" required>
                         </div>
                         {% if moderator_message %}
-                        <div class="alert alert-danger" style="display: flex; justify-content: center;" role="alert">
-                            <b>{{moderator_message}}</b>
-                        </div>
+                        <div style="display: flex; justify-content: center;">
+                            <div class="alert alert-danger" role="alert">
+                                <b>{{moderator_message}}</b>
+                            </div>
+                        </div>  
                         {% endif %}
                         <div style="display: flex; justify-content: center;">
                             <input type="submit" class="btn btn-primary"  value="Promote">
@@ -59,8 +61,10 @@
                             <textarea id="reason" class="form-control" name="reason"  rows="3" cols="40" maxlength="500" placeholder="Reason for ban?" required></textarea>
                         </div>
                         {% if ban_message %}
-                        <div class="alert alert-danger" style="display: flex; justify-content: center;" role="alert">
-                            <b>{{ban_message}}</b>
+                        <div style="display: flex; justify-content: center;">
+                            <div class="alert alert-danger" style="display: flex; justify-content: center;" role="alert">
+                                <b>{{ban_message}}</b>
+                            </div>
                         </div>
                         {% endif %}
                         <div style="display: flex; justify-content: center;">
